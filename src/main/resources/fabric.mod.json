@@ -15,6 +15,9 @@
         "adapter": "kotlin",
         "value": "dev.lyzev.hp.HorsePower"
       }
+    ],
+    "modmenu": [
+      "dev.lyzev.hp.modmenu.HorsePowerModMenu"
     ]
   },
   "mixins": [
