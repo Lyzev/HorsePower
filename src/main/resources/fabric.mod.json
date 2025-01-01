@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
-  "id": "${PROJECT_ID}",
+  "id": "horsepower",
   "version": "${version}",
-  "name": "${PROJECT_NAME}",
-  "description": "A templat for fabric mods.",
+  "name": "HorsePower",
+  "description": "Ever wonder if your horse is more of a galloping champion or a pasture potato?",
   "authors": [],
   "contact": {},
   "license": "AGPL-3.0",
-  "icon": "assets/${PROJECT_ID}/icon.png",
+  "icon": "assets/horsepower/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "dev.lyzev.fabricmodtemplate.client.FabricmodtemplateClient"
-    ],
-    "main": [
-      "dev.lyzev.fabricmodtemplate.Fabricmodtemplate"
+      {
+        "adapter": "kotlin",
+        "value": "dev.lyzev.horsepower.HorsePower"
+      }
     ]
   },
   "mixins": [
-    "${PROJECT_ID}.mixins.json"
+    "horsepower.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

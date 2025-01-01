@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024. Lyzev
+ * Copyright (c) 2025. Lyzev
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -15,12 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.fabricmodtemplate
+package dev.lyzev.horsepower
 
-import net.fabricmc.api.ModInitializer
+import net.fabricmc.api.ClientModInitializer
 
-class Fabricmodtemplate : ModInitializer {
+object HorsePower : ClientModInitializer {
 
-    override fun onInitialize() {
+    override fun onInitializeClient() {
+        TODO("Not yet implemented")
     }
 }

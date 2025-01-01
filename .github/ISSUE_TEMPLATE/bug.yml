@@ -1,5 +1,5 @@
 name: Bug Report
-description: Help us improve ${PROJECT_NAME} by reporting bugs.
+description: Help us improve HorsePower by reporting bugs.
 title: '[Bug] '
 labels: bug
 body:

@@ -1,4 +1,4 @@
-# Contributing to ${PROJECT_NAME}
+# Contributing to HorsePower
 
 Thank you for considering contributing to this Spigot plugin project! Your contributions will help to make it even better.
 
@@ -6,7 +6,7 @@ Thank you for considering contributing to this Spigot plugin project! Your contr
 
 1. Clone the repository using your preferred IDE or the command line:
     ```shell
-    git clone https://github.com/Lyzev/${PROJECT_NAME}.git
+    git clone https://github.com/Lyzev/HorsePower.git
     ```
 2. Open the project in your IDE and ensure that the Gradle project is imported.
 3. Run the `:build` Gradle task to build the project.

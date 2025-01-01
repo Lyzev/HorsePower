@@ -1,5 +1,5 @@
 name: Suggestion
-description: Suggest a new feature or change for ${PROJECT_NAME}.
+description: Suggest a new feature or change for HorsePower.
 title: '[Suggestion] '
 labels: enhancement
 body:
@@ -18,7 +18,7 @@ body:
       label: Benefits of the Feature
       description: |
         Describe the benefits of this feature.
-        How will it improve the user experience or functionality of ${PROJECT_NAME}?
+        How will it improve the user experience or functionality of HorsePower?
     validations:
       required: true
   - type: textarea

@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.lyzev.fabricmodtemplate.mixin",
+  "package": "dev.lyzev.horsepower.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
   ],
