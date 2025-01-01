@@ -19,39 +19,43 @@ package dev.lyzev.hp.util
 
 import net.minecraft.entity.LivingEntity
 
-object Math {
+/**
+ * Constants for unit conversion.
+ */
+private const val UNIT_TO_BPS = 43.17
 
-    private const val UNIT_TO_BPS = 43.17
-    private const val FACTOR = 0.98 * 0.98
+/**
+ * Constants for jump height calculation.
+ */
+private const val FACTOR = 0.98 * 0.98
 
-    /**
-     * Converts a unit to blocks per second.
-     * See the following link for more information:
-     * https://minecraft.wiki/w/Horse#Movement_speed
-     */
-    fun unit2bps(unit: Double): Double {
-        return unit * UNIT_TO_BPS
+/**
+ * Converts a unit to blocks per second.
+ * See the following link for more information:
+ * https://minecraft.wiki/w/Horse#Movement_speed
+ */
+fun unit2bps(unit: Double): Double {
+    return unit * UNIT_TO_BPS
+}
+
+/**
+ * Converts a unit to a jump height.
+ *
+ * The internal unit represents the initial vertical velocity when the horse jump is perfectly timed.
+ * Then we can apply gravity to calculate the resulting jump height.
+ * The gravity formula is based on the calculations found at:
+ * https://www.reddit.com/r/GameTheorists/comments/dj8odm/i_calculated_minecrafts_true_gravity/
+ *
+ * @see net.minecraft.entity.passive.AbstractHorseEntity.jump
+ *
+ * @param unit The internal unit to convert to jump height.
+ */
+fun unit2jump(unit: Double): Double {
+    var velocity = unit
+    var jumpHeight = 0.0
+    while (velocity > 0) {
+        jumpHeight += velocity
+        velocity = (velocity - LivingEntity.GRAVITY) * FACTOR
     }
-
-    /**
-     * Converts a unit to a jump height.
-     *
-     * The internal unit represents the initial vertical velocity when the horse jump is perfectly timed.
-     * Then we can apply gravity to calculate the resulting jump height.
-     * The gravity formula is based on the calculations found at:
-     * https://www.reddit.com/r/GameTheorists/comments/dj8odm/i_calculated_minecrafts_true_gravity/
-     *
-     * @see net.minecraft.entity.passive.AbstractHorseEntity.jump
-     *
-     * @param unit The internal unit to convert to jump height.
-     */
-    fun unit2jump(unit: Double): Double {
-        var velocity = unit
-        var jumpHeight = 0.0
-        while (velocity > 0) {
-            jumpHeight += velocity
-            velocity = (velocity - LivingEntity.GRAVITY) * FACTOR
-        }
-        return jumpHeight
-    }
+    return jumpHeight
 }

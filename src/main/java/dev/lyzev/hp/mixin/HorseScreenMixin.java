@@ -18,16 +18,23 @@
 package dev.lyzev.hp.mixin;
 
 import dev.lyzev.hp.HorsePower;
+import dev.lyzev.hp.modmenu.HorsePowerConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.awt.*;
+
+import static dev.lyzev.hp.util.MathKt.unit2bps;
+import static dev.lyzev.hp.util.MathKt.unit2jump;
 
 @Mixin(HorseScreen.class)
 public class HorseScreenMixin {
@@ -38,6 +45,8 @@ public class HorseScreenMixin {
 
     @Inject(method = "drawBackground", at = @At("RETURN"))
     private void onDrawBackground(DrawContext drawContext, float f, int i, int j, CallbackInfo ci) {
+        if (!HorsePowerConfig.INSTANCE.getSHOW_INVENTORY().getValue())
+            return;
         // TODO: Add indicator to the horse inventory screen to show the attributes of the horse
         if (entity.getInventoryColumns() > 0) {
         } else {
@@ -49,13 +58,57 @@ public class HorseScreenMixin {
 
             AbstractHorseEntity horse = this.entity;
 
-            double speedMovement = Math.round(horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED) * 100) / 100.0;
-            double jumpHeight = Math.round(horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH) * 100) / 100.0;
-            double health = Math.round(horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH) * 100) / 100.0;
+            double speedMovement = Math.round(unit2bps(horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)) * 100) / 100.0;
+            double jumpHeight = Math.round(unit2jump(horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)) * 100) / 100.0;
+            int health = (int) horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH);
 
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Speed: " + speedMovement, x, y, 0xFFFFFF, true);
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Jump: " + jumpHeight, x, y + 10, 0xFFFFFF, true);
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Health: " + health, x, y + 20, 0xFFFFFF, true);
+            int color1 = 0xB71C1C;
+            int color2 = 0x1B5E20;
+
+            float[] hsv1 = new float[3];
+            float[] hsv2 = new float[3];
+            Color.RGBtoHSB((color1 >> 16) & 0xFF, (color1 >> 8) & 0xFF, color1 & 0xFF, hsv1);
+            Color.RGBtoHSB((color2 >> 16) & 0xFF, (color2 >> 8) & 0xFF, color2 & 0xFF, hsv2);
+            float[] diff = new float[]{
+                hsv2[0] - hsv1[0],
+                hsv2[1] - hsv1[1],
+                hsv2[2] - hsv1[2]
+            };
+
+            double speedMovementPercentage = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS;
+            double jumpHeightPercentage = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS;
+            double healthPercentage = health / AbstractHorseEntity.MAX_HEALTH_BONUS;
+
+            int interpolatedColorSpeed = Color.HSBtoRGB(
+                hsv1[0] + (float) (diff[0] * speedMovementPercentage),
+                1f,
+                hsv1[2] + (float) (diff[2] * speedMovementPercentage)
+            );
+            int interpolatedColorJump = Color.HSBtoRGB(
+                hsv1[0] + (float) (diff[0] * jumpHeightPercentage),
+                1f,
+                hsv1[2] + (float) (diff[2] * jumpHeightPercentage)
+            );
+            int interpolatedColorHealth = Color.HSBtoRGB(
+                hsv1[0] + (float) (diff[0] * healthPercentage),
+                1f,
+                hsv1[2] + (float) (diff[2] * healthPercentage)
+            );
+
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↔ " + speedMovement + " m/s (" + Math.round(speedMovementPercentage * 100) + "%)", x, y, interpolatedColorSpeed, true);
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↕ " + jumpHeight + " blocks (" + Math.round(jumpHeightPercentage * 100) + "%)", x, y + 10, interpolatedColorJump, true);
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "♥ " + health + " HP (" + Math.round(healthPercentage * 100) + "%)", x, y + 20, interpolatedColorHealth, true);
+
+            double total = MathHelper.clamp(speedMovementPercentage, 0, 1) + MathHelper.clamp(jumpHeightPercentage, 0, 1) + MathHelper.clamp(healthPercentage, 0, 1);
+            double average = total / 3;
+
+            int interpolatedColorAverage = Color.HSBtoRGB(
+                hsv1[0] + (float) (diff[0] * average),
+                1f,
+                hsv1[2] + (float) (diff[2] * average)
+            );
+
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Average: " + Math.round(average * 100) + "%", x, y + 30, interpolatedColorAverage, true);
         }
     }
 }
