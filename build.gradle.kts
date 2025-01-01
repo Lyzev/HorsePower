@@ -20,6 +20,10 @@ java {
 }
 
 repositories {
+    maven {
+        name = "Terraformers"
+        url = uri("https://maven.terraformersmc.com/")
+    }
 }
 
 dependencies {
@@ -29,6 +33,8 @@ dependencies {
     modImplementation(libs.fabric.language.kotlin)
 
     modImplementation(libs.fabric.api)
+
+    modImplementation(libs.modmenu)
 }
 
 loom {
