@@ -8,18 +8,19 @@
   "contact": {},
   "license": "AGPL-3.0",
   "icon": "assets/horsepower/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       {
         "adapter": "kotlin",
-        "value": "dev.lyzev.horsepower.HorsePower"
+        "value": "dev.lyzev.hp.HorsePower"
       }
     ]
   },
   "mixins": [
     "horsepower.mixins.json"
   ],
+  "accessWidener": "horsepower.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-language-kotlin": ">=${kotlin_loader_version}",

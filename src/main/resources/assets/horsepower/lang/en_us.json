@@ -1,0 +1,5 @@
+{
+  "hp.search.error": "No horses were found nearby.",
+  "hp.search.success.one": "One horse was found nearby and highlighted with a glow.",
+  "hp.search.success.two": "The two best horses were found nearby and highlighted with a glow."
+}
