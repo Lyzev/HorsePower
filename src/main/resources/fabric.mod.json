@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "${PROJECT_ID}",
+  "version": "${version}",
+  "name": "${PROJECT_NAME}",
+  "description": "A templat for fabric mods.",
+  "authors": [],
+  "contact": {},
+  "license": "AGPL-3.0",
+  "icon": "assets/${PROJECT_ID}/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.lyzev.fabricmodtemplate.client.FabricmodtemplateClient"
+    ],
+    "main": [
+      "dev.lyzev.fabricmodtemplate.Fabricmodtemplate"
+    ]
+  },
+  "mixins": [
+    "${PROJECT_ID}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

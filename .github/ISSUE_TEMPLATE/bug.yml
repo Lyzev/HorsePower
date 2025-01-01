@@ -1,0 +1,69 @@
+name: Bug Report
+description: Help us improve ${PROJECT_NAME} by reporting bugs.
+title: '[Bug] '
+labels: bug
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: |
+        Provide a clear and concise description of the issue.
+        Include any relevant information such as error messages, screenshots, or crash reports.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: |
+        Outline the steps to reproduce the bug.
+        Include detailed instructions so we can replicate the issue.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: |
+        Describe what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: |
+        Describe what actually happened.
+        If applicable, include error messages or logs.
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating System
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before Submitting a Bug Report
+      options:
+        - label: |
+            I have checked that this bug was not already reported.
+          required: true
+        - label: |
+            I am able to reproduce this bug on the latest development build.
+          required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context about the problem here.
+        Include any relevant details such as mods used, configuration settings, etc.
