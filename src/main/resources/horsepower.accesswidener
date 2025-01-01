@@ -1,8 +1,8 @@
 accessWidener v2 named
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MIN_MOVEMENT_SPEED F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_MOVEMENT_SPEED F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MIN_JUMP_STRENGTH F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_JUMP_STRENGTH F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MIN_HEALTH F
-accessible field net/minecraft/world/entity/animal/horse/AbstractHorse MAX_HEALTH F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MIN_MOVEMENT_SPEED_BONUS F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MAX_MOVEMENT_SPEED_BONUS F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MIN_JUMP_STRENGTH_BONUS F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MAX_JUMP_STRENGTH_BONUS F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MIN_HEALTH_BONUS F
+accessible field net/minecraft/entity/passive/AbstractHorseEntity MAX_HEALTH_BONUS F
 

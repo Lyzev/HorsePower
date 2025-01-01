@@ -6,8 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "HorseInventoryScreenMixin",
-    "MinecraftMixin"
+    "HorseScreenMixin",
+    "MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

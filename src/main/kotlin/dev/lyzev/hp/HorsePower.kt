@@ -22,21 +22,20 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.ChatFormatting
-import net.minecraft.client.Minecraft
-import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.Style
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.entity.animal.horse.AbstractHorse
-import net.minecraft.world.entity.animal.horse.Donkey
-import net.minecraft.world.entity.animal.horse.Horse
-import net.minecraft.world.entity.animal.horse.Mule
+import net.minecraft.client.MinecraftClient
+import net.minecraft.entity.Entity
+import net.minecraft.entity.attribute.EntityAttributes
+import net.minecraft.entity.passive.AbstractHorseEntity
+import net.minecraft.entity.passive.DonkeyEntity
+import net.minecraft.entity.passive.HorseEntity
+import net.minecraft.entity.passive.MuleEntity
+import net.minecraft.text.Text
+import net.minecraft.util.Formatting
 
 
 object HorsePower : ClientModInitializer {
 
-    val mc = Minecraft.getInstance()
+    val mc = MinecraftClient.getInstance()
 
     var last = System.currentTimeMillis()
     val horses = mutableListOf<Entity>()
@@ -46,21 +45,21 @@ object HorsePower : ClientModInitializer {
             dispatcher.register(
                 ClientCommandManager.literal("search")
                     .executes { context: CommandContext<FabricClientCommandSource> ->
-                        val horses = mc.level!!.entitiesForRendering().filter { it is Horse || it is Donkey || it is Mule }.sortedBy {
-                            val horse = it as AbstractHorse
-                            val movementSpeed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED).coerceIn(AbstractHorse.MIN_MOVEMENT_SPEED.toDouble(), AbstractHorse.MAX_MOVEMENT_SPEED.toDouble()) / AbstractHorse.MAX_MOVEMENT_SPEED.toDouble()
-                            val jumpStrength = horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH).coerceIn(AbstractHorse.MIN_JUMP_STRENGTH.toDouble(), AbstractHorse.MAX_JUMP_STRENGTH.toDouble()) / AbstractHorse.MAX_JUMP_STRENGTH.toDouble()
-                            val health = horse.getAttributeBaseValue(Attributes.MAX_HEALTH).coerceIn(AbstractHorse.MIN_HEALTH.toDouble(), AbstractHorse.MAX_HEALTH.toDouble()) / AbstractHorse.MAX_HEALTH.toDouble()
+                        val horses = mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }.sortedBy {
+                            val horse = it as AbstractHorseEntity
+                            val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(), AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
+                            val jumpStrength = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(), AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
+                            val health = horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(), AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
                             movementSpeed + jumpStrength + health
                         }
                         if (horses.isEmpty()) {
-                            context.source.sendError(Component.translatable("hp.search.error"))
+                            context.source.sendError(Text.translatable("hp.search.error"))
                             0
                         } else {
                             last = System.currentTimeMillis()
                             this.horses.clear()
                             this.horses += horses.take(2)
-                            context.source.sendFeedback(Component.translatable(if (horses.count() == 1) "hp.search.success.one" else "hp.search.success.two").withColor(ChatFormatting.GREEN.color!!))
+                            context.source.sendFeedback(Text.translatable(if (horses.count() == 1) "hp.search.success.one" else "hp.search.success.two").withColor(Formatting.GREEN.colorValue!!))
                             1
                         }
                     }

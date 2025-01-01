@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
+    mappings(libs.yarn)
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.language.kotlin)
 
