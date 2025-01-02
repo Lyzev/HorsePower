@@ -26,6 +26,9 @@ import java.lang.reflect.Modifier
 object HorsePowerConfig {
 
     val SHOW_INVENTORY = BooleanConfigOption("show_inventory", true)
+    val SHOW_UNIT = BooleanConfigOption("show_unit", false)
+    val SHOW_PERCENTAGE = BooleanConfigOption("show_percentage", true)
+    val SHOW_AVERAGE = BooleanConfigOption("show_average", true)
 
     fun asOptions(): Array<SimpleOption<*>> {
         val options = ArrayList<SimpleOption<*>>()

@@ -1,9 +1,18 @@
 {
-  "hp.search.error": "No horses were found nearby.",
-  "hp.search.success.one": "One horse was found nearby and highlighted with a glow.",
-  "hp.search.success.two": "The two best horses were found nearby and highlighted with a glow.",
+  "horsepower.search.error": "No horses were found nearby.",
+  "horsepower.search.success.one": "One horse was found nearby and highlighted with a glow.",
+  "horsepower.search.success.two": "The two best horses were found nearby and highlighted with a glow.",
   "horsepower.options": "HorsePower Options",
   "option.modmenu.show_inventory": "Show in inventory",
   "option.modmenu.show_inventory.true": "ON",
-  "option.modmenu.show_inventory.false": "OFF"
+  "option.modmenu.show_inventory.false": "OFF",
+  "option.modmenu.show_unit": "Show unit",
+  "option.modmenu.show_unit.true": "ON",
+  "option.modmenu.show_unit.false": "OFF",
+  "option.modmenu.show_percentage": "Show percentage",
+  "option.modmenu.show_percentage.true": "ON",
+  "option.modmenu.show_percentage.false": "OFF",
+  "option.modmenu.show_average": "Show average",
+  "option.modmenu.show_average.true": "ON",
+  "option.modmenu.show_average.false": "OFF"
 }

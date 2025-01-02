@@ -75,9 +75,38 @@ public class HorseScreenMixin {
             int interpolatedColorJump = interpolateColor(RED, GREEN, jumpHeightPercentage);
             int interpolatedColorHealth = interpolateColor(RED, GREEN, healthPercentage);
 
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↔ " + speedMovement + " m/s (" + Math.round(speedMovementPercentage * 100) + "%)", x, y, interpolatedColorSpeed, true);
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↕ " + jumpHeight + " blocks (" + Math.round(jumpHeightPercentage * 100) + "%)", x, y + 10, interpolatedColorJump, true);
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "♥ " + health + " HP (" + Math.round(healthPercentage * 100) + "%)", x, y + 20, interpolatedColorHealth, true);
+            var speedMovementText = new StringBuilder();
+            speedMovementText.append("↔ ").append(speedMovement);
+            if (HorsePowerConfig.INSTANCE.getSHOW_UNIT().getValue()) {
+                speedMovementText.append(" m/s");
+            }
+            if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
+                speedMovementText.append(" (").append(Math.round(speedMovementPercentage * 100)).append("%)");
+            }
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, speedMovementText.toString(), x, y, interpolatedColorSpeed, true);
+
+            var jumpHeightText = new StringBuilder();
+            jumpHeightText.append("↕ ").append(jumpHeight);
+            if (HorsePowerConfig.INSTANCE.getSHOW_UNIT().getValue()) {
+                jumpHeightText.append(" blocks");
+            }
+            if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
+                jumpHeightText.append(" (").append(Math.round(jumpHeightPercentage * 100)).append("%)");
+            }
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, jumpHeightText.toString(), x, y + 10, interpolatedColorJump, true);
+
+            var healthText = new StringBuilder();
+            healthText.append("♥ ").append(health);
+            if (HorsePowerConfig.INSTANCE.getSHOW_UNIT().getValue()) {
+                healthText.append(" HP");
+            }
+            if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
+                healthText.append(" (").append(Math.round(healthPercentage * 100)).append("%)");
+            }
+            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, healthText.toString(), x, y + 20, interpolatedColorHealth, true);
+
+            if (!HorsePowerConfig.INSTANCE.getSHOW_AVERAGE().getValue())
+                return;
 
             double total = MathHelper.clamp(speedMovementPercentage, 0, 1) + MathHelper.clamp(jumpHeightPercentage, 0, 1) + MathHelper.clamp(healthPercentage, 0, 1);
             double average = total / 3;
