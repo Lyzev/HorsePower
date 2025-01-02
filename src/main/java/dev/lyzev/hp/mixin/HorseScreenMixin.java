@@ -19,6 +19,7 @@ package dev.lyzev.hp.mixin;
 
 import dev.lyzev.hp.HorsePower;
 import dev.lyzev.hp.modmenu.HorsePowerConfig;
+import dev.lyzev.hp.util.ColorKt;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -33,11 +34,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
+import static dev.lyzev.hp.util.ColorKt.interpolateColor;
 import static dev.lyzev.hp.util.MathKt.unit2bps;
 import static dev.lyzev.hp.util.MathKt.unit2jump;
 
 @Mixin(HorseScreen.class)
 public class HorseScreenMixin {
+
+    private static final Color RED = new Color(183, 0, 0);
+    private static final Color GREEN = new Color(0, 108, 7);
 
     @Shadow
     @Final
@@ -62,38 +67,13 @@ public class HorseScreenMixin {
             double jumpHeight = Math.round(unit2jump(horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)) * 100) / 100.0;
             int health = (int) horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH);
 
-            int color1 = 0xB71C1C;
-            int color2 = 0x1B5E20;
-
-            float[] hsv1 = new float[3];
-            float[] hsv2 = new float[3];
-            Color.RGBtoHSB((color1 >> 16) & 0xFF, (color1 >> 8) & 0xFF, color1 & 0xFF, hsv1);
-            Color.RGBtoHSB((color2 >> 16) & 0xFF, (color2 >> 8) & 0xFF, color2 & 0xFF, hsv2);
-            float[] diff = new float[]{
-                hsv2[0] - hsv1[0],
-                hsv2[1] - hsv1[1],
-                hsv2[2] - hsv1[2]
-            };
-
             double speedMovementPercentage = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS;
             double jumpHeightPercentage = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS;
             double healthPercentage = health / AbstractHorseEntity.MAX_HEALTH_BONUS;
 
-            int interpolatedColorSpeed = Color.HSBtoRGB(
-                hsv1[0] + (float) (diff[0] * speedMovementPercentage),
-                1f,
-                hsv1[2] + (float) (diff[2] * speedMovementPercentage)
-            );
-            int interpolatedColorJump = Color.HSBtoRGB(
-                hsv1[0] + (float) (diff[0] * jumpHeightPercentage),
-                1f,
-                hsv1[2] + (float) (diff[2] * jumpHeightPercentage)
-            );
-            int interpolatedColorHealth = Color.HSBtoRGB(
-                hsv1[0] + (float) (diff[0] * healthPercentage),
-                1f,
-                hsv1[2] + (float) (diff[2] * healthPercentage)
-            );
+            int interpolatedColorSpeed = interpolateColor(RED, GREEN, speedMovementPercentage);
+            int interpolatedColorJump = interpolateColor(RED, GREEN, jumpHeightPercentage);
+            int interpolatedColorHealth = interpolateColor(RED, GREEN, healthPercentage);
 
             drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↔ " + speedMovement + " m/s (" + Math.round(speedMovementPercentage * 100) + "%)", x, y, interpolatedColorSpeed, true);
             drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "↕ " + jumpHeight + " blocks (" + Math.round(jumpHeightPercentage * 100) + "%)", x, y + 10, interpolatedColorJump, true);
@@ -102,11 +82,7 @@ public class HorseScreenMixin {
             double total = MathHelper.clamp(speedMovementPercentage, 0, 1) + MathHelper.clamp(jumpHeightPercentage, 0, 1) + MathHelper.clamp(healthPercentage, 0, 1);
             double average = total / 3;
 
-            int interpolatedColorAverage = Color.HSBtoRGB(
-                hsv1[0] + (float) (diff[0] * average),
-                1f,
-                hsv1[2] + (float) (diff[2] * average)
-            );
+            int interpolatedColorAverage = interpolateColor(RED, GREEN, average);
 
             drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Average: " + Math.round(average * 100) + "%", x, y + 30, interpolatedColorAverage, true);
         }
