@@ -30,5 +30,7 @@ class HorsePowerConfigScreen(parent: Screen) : GameOptionsScreen(parent, Minecra
         }
     }
 
-    override fun removed() {}
+    override fun removed() {
+        HorsePowerConfigManager.save()
+    }
 }

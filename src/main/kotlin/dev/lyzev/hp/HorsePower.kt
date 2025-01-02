@@ -18,6 +18,7 @@
 package dev.lyzev.hp
 
 import com.mojang.brigadier.context.CommandContext
+import dev.lyzev.hp.modmenu.HorsePowerConfigManager
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -35,12 +36,16 @@ import net.minecraft.util.Formatting
 
 object HorsePower : ClientModInitializer {
 
+    const val MOD_ID = "horsepower"
+
     val mc = MinecraftClient.getInstance()
 
     var last = System.currentTimeMillis()
     val horses = mutableListOf<Entity>()
 
     override fun onInitializeClient() {
+        HorsePowerConfigManager.initializeConfig()
+
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
             dispatcher.register(
                 ClientCommandManager.literal("search")
@@ -53,13 +58,13 @@ object HorsePower : ClientModInitializer {
                             movementSpeed + jumpStrength + health
                         }
                         if (horses.isEmpty()) {
-                            context.source.sendError(Text.translatable("hp.search.error"))
+                            context.source.sendError(Text.translatable("horsepower.search.error"))
                             0
                         } else {
                             last = System.currentTimeMillis()
                             this.horses.clear()
                             this.horses += horses.take(2)
-                            context.source.sendFeedback(Text.translatable(if (horses.count() == 1) "hp.search.success.one" else "hp.search.success.two").withColor(Formatting.GREEN.colorValue!!))
+                            context.source.sendFeedback(Text.translatable(if (horses.count() == 1) "horsepower.search.success.one" else "horsepower.search.success.two").withColor(Formatting.GREEN.colorValue!!))
                             1
                         }
                     }
