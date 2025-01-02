@@ -19,11 +19,12 @@ package dev.lyzev.hp.mixin;
 
 import dev.lyzev.hp.HorsePower;
 import dev.lyzev.hp.modmenu.HorsePowerConfig;
-import dev.lyzev.hp.util.ColorKt;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,17 +33,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.awt.*;
-
-import static dev.lyzev.hp.util.ColorKt.interpolateColor;
 import static dev.lyzev.hp.util.MathKt.unit2bps;
 import static dev.lyzev.hp.util.MathKt.unit2jump;
 
 @Mixin(HorseScreen.class)
 public class HorseScreenMixin {
 
-    private static final Color RED = new Color(183, 0, 0);
-    private static final Color GREEN = new Color(0, 108, 7);
+    private static final int WHITE = 0xFFFFFFFF;
+
+    private static final Formatting[] FORMATTINGS = new Formatting[] { Formatting.DARK_RED, Formatting.RED, Formatting.GOLD, Formatting.YELLOW, Formatting.GREEN, Formatting.DARK_GREEN };
 
     @Shadow
     @Final
@@ -71,9 +70,9 @@ public class HorseScreenMixin {
             double jumpHeightPercentage = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS;
             double healthPercentage = health / AbstractHorseEntity.MAX_HEALTH_BONUS;
 
-            int interpolatedColorSpeed = interpolateColor(RED, GREEN, speedMovementPercentage);
-            int interpolatedColorJump = interpolateColor(RED, GREEN, jumpHeightPercentage);
-            int interpolatedColorHealth = interpolateColor(RED, GREEN, healthPercentage);
+            var speedMovementFormatting = FORMATTINGS[Math.min(FORMATTINGS.length - 1, (int) Math.round(speedMovementPercentage * (FORMATTINGS.length - 1)))];
+            var jumpHeightFormatting = FORMATTINGS[Math.min(FORMATTINGS.length - 1, (int) Math.round(jumpHeightPercentage * (FORMATTINGS.length - 1)))];
+            var healthFormatting = FORMATTINGS[Math.min(FORMATTINGS.length - 1, (int) Math.round(healthPercentage * (FORMATTINGS.length - 1)))];
 
             var speedMovementText = new StringBuilder();
             speedMovementText.append("↔ ").append(speedMovement);
@@ -83,7 +82,7 @@ public class HorseScreenMixin {
             if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
                 speedMovementText.append(" (").append(Math.round(speedMovementPercentage * 100)).append("%)");
             }
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, speedMovementText.toString(), x, y, interpolatedColorSpeed, true);
+            drawContext.drawTextWithShadow(HorsePower.INSTANCE.getMc().textRenderer, Text.literal(speedMovementText.toString()).formatted(speedMovementFormatting), x, y, WHITE);
 
             var jumpHeightText = new StringBuilder();
             jumpHeightText.append("↕ ").append(jumpHeight);
@@ -93,7 +92,7 @@ public class HorseScreenMixin {
             if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
                 jumpHeightText.append(" (").append(Math.round(jumpHeightPercentage * 100)).append("%)");
             }
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, jumpHeightText.toString(), x, y + 10, interpolatedColorJump, true);
+            drawContext.drawTextWithShadow(HorsePower.INSTANCE.getMc().textRenderer, Text.literal(jumpHeightText.toString()).formatted(jumpHeightFormatting), x, y + 10, WHITE);
 
             var healthText = new StringBuilder();
             healthText.append("♥ ").append(health);
@@ -103,17 +102,18 @@ public class HorseScreenMixin {
             if (HorsePowerConfig.INSTANCE.getSHOW_PERCENTAGE().getValue()) {
                 healthText.append(" (").append(Math.round(healthPercentage * 100)).append("%)");
             }
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, healthText.toString(), x, y + 20, interpolatedColorHealth, true);
+            drawContext.drawTextWithShadow(HorsePower.INSTANCE.getMc().textRenderer, Text.literal(healthText.toString()).formatted(healthFormatting), x, y + 20, WHITE);
 
-            if (!HorsePowerConfig.INSTANCE.getSHOW_AVERAGE().getValue())
+            if (!HorsePowerConfig.INSTANCE.getSHOW_AVERAGE().getValue()) {
                 return;
+            }
 
             double total = MathHelper.clamp(speedMovementPercentage, 0, 1) + MathHelper.clamp(jumpHeightPercentage, 0, 1) + MathHelper.clamp(healthPercentage, 0, 1);
             double average = total / 3;
 
-            int interpolatedColorAverage = interpolateColor(RED, GREEN, average);
+            var averageFormatting = FORMATTINGS[Math.min(FORMATTINGS.length - 1, (int) Math.round(average * (FORMATTINGS.length - 1)))];
 
-            drawContext.drawText(HorsePower.INSTANCE.getMc().textRenderer, "Average: " + Math.round(average * 100) + "%", x, y + 30, interpolatedColorAverage, true);
+            drawContext.drawTextWithShadow(HorsePower.INSTANCE.getMc().textRenderer, Text.literal("Average: " + Math.round(average * 100) + "%").formatted(averageFormatting), x, y + 30, WHITE);
         }
     }
 }
