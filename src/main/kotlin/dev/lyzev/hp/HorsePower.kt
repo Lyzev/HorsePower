@@ -62,102 +62,12 @@ object HorsePower : ClientModInitializer {
                             .executes { context ->
                                 val criteria = StringArgumentType.getString(context, "criteria")
                                 val amount = IntegerArgumentType.getInteger(context, "amount")
-                                val horses =
-                                    mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }
-                                        .sortedBy {
-                                            val horse = it as AbstractHorseEntity
-                                            when (criteria) {
-                                                "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
-                                                "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                                                "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
-                                                else -> {
-                                                    val movementSpeed =
-                                                        horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                                                            .coerceIn(
-                                                                AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
-                                                                AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                                                            ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                                                    val jumpStrength =
-                                                        horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
-                                                            .coerceIn(
-                                                                AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
-                                                                AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                                                            ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                                                    val health =
-                                                        horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
-                                                            .coerceIn(
-                                                                AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
-                                                                AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                                                            ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                                                    movementSpeed + jumpStrength + health
-                                                }
-                                            }
-                                        }
-                                if (horses.isEmpty()) {
-                                    context.source.sendError(Text.translatable("horsepower.search.error"))
-                                    0
-                                } else {
-                                    last = System.currentTimeMillis()
-                                    this.horses.clear()
-                                    this.horses += horses.takeLast(amount)
-                                    context.source.sendFeedback(
-                                        Text.translatable(
-                                            "horsepower.search.success",
-                                            this.horses.size,
-                                            criteria
-                                        ).withColor(Formatting.GREEN.colorValue!!)
-                                    )
-                                    1
-                                }
-                            }).executes { context: CommandContext<FabricClientCommandSource> ->
-                        val criteria = StringArgumentType.getString(context, "criteria")
+                                executeSearch(context, criteria, amount)
+                            })).executes { context: CommandContext<FabricClientCommandSource> ->
+                        val criteria = "average"
                         val amount = 2
-                        val horses =
-                            mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }
-                                .sortedBy {
-                                    val horse = it as AbstractHorseEntity
-                                    when (criteria) {
-                                        "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
-                                        "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                                        "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
-                                        else -> {
-                                            val movementSpeed =
-                                                horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
-                                                        AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
-                                                        AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                                                    ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                                            val jumpStrength =
-                                                horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(
-                                                        AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
-                                                        AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                                                    ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                                            val health =
-                                                horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(
-                                                    AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
-                                                    AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                                                ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                                            movementSpeed + jumpStrength + health
-                                        }
-                                    }
-                                }
-                        if (horses.isEmpty()) {
-                            context.source.sendError(Text.translatable("horsepower.search.error"))
-                            0
-                        } else {
-                            last = System.currentTimeMillis()
-                            this.horses.clear()
-                            this.horses += horses.takeLast(amount)
-                            context.source.sendFeedback(
-                                Text.translatable(
-                                    "horsepower.search.success",
-                                    this.horses.size,
-                                    criteria
-                                ).withColor(Formatting.GREEN.colorValue!!)
-                            )
-                            1
-                        }
+                        executeSearch(context, criteria, amount)
                     })
-            )
             dispatcher.register(
                 ClientCommandManager.literal("stats").executes { context: CommandContext<FabricClientCommandSource> ->
                     val targetEntity = mc.targetedEntity
@@ -182,5 +92,46 @@ object HorsePower : ClientModInitializer {
                     }
                 })
         })
+    }
+
+    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int): Int {
+        val horses =
+            mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }.sortedBy {
+                    val horse = it as AbstractHorseEntity
+                    when (criteria) {
+                        "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
+                        "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
+                        "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
+                        else -> {
+                            val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
+                                    AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
+                                    AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
+                                ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
+                            val jumpStrength = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(
+                                    AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
+                                    AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
+                                ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
+                            val health = horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(
+                                    AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
+                                    AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
+                                ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
+                            movementSpeed + jumpStrength + health
+                        }
+                    }
+                }
+        return if (horses.isEmpty()) {
+            context.source.sendError(Text.translatable("horsepower.search.error"))
+            0
+        } else {
+            last = System.currentTimeMillis()
+            this.horses.clear()
+            this.horses += horses.takeLast(amount)
+            context.source.sendFeedback(
+                Text.translatable(
+                    "horsepower.search.success", this.horses.size, criteria
+                ).withColor(Formatting.GREEN.colorValue!!)
+            )
+            1
+        }
     }
 }
