@@ -29,6 +29,7 @@ object HorsePowerConfig {
     val SHOW_UNIT = BooleanConfigOption("show_unit", false)
     val SHOW_PERCENTAGE = BooleanConfigOption("show_percentage", true)
     val SHOW_AVERAGE = BooleanConfigOption("show_average", true)
+    val SHOW_CROSSHAIR = BooleanConfigOption("show_crosshair", true)
 
     fun asOptions(): Array<SimpleOption<*>> {
         val options = ArrayList<SimpleOption<*>>()

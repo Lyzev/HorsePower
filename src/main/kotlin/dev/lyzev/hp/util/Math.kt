@@ -35,8 +35,8 @@ private const val FACTOR = 0.98 * 0.98
  * See the following link for more information:
  * https://minecraft.wiki/w/Horse#Movement_speed
  */
-fun unit2bps(unit: Double): Double {
-    return unit * UNIT_TO_BPS
+fun Double.toBPS(): Double {
+    return this * UNIT_TO_BPS
 }
 
 /**
@@ -51,8 +51,8 @@ fun unit2bps(unit: Double): Double {
  *
  * @param unit The internal unit to convert to jump height.
  */
-fun unit2jump(unit: Double): Double {
-    var velocity = unit
+fun Double.toJump(): Double {
+    var velocity = this
     var jumpHeight = 0.0
     while (velocity > 0) {
         jumpHeight += velocity

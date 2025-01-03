@@ -20,8 +20,8 @@ package dev.lyzev.hp
 import com.mojang.brigadier.context.CommandContext
 import dev.lyzev.hp.modmenu.HorsePowerConfigManager
 import dev.lyzev.hp.util.round
-import dev.lyzev.hp.util.unit2bps
-import dev.lyzev.hp.util.unit2jump
+import dev.lyzev.hp.util.toBPS
+import dev.lyzev.hp.util.toJump
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -85,7 +85,6 @@ object HorsePower : ClientModInitializer {
                         1
                     }
                 })
-            // TODO: Add /stats command that gets crosshair entity check if it's a horse and then display stats
             dispatcher.register(
                 ClientCommandManager.literal("stats").executes { context: CommandContext<FabricClientCommandSource> ->
                     val targetEntity = mc.targetedEntity
@@ -96,8 +95,8 @@ object HorsePower : ClientModInitializer {
                         context.source.sendFeedback(
                             Text.translatable(
                                 "horsepower.stats.success",
-                                unit2bps(movementSpeed).round(1),
-                                unit2jump(jumpStrength).round(1),
+                                movementSpeed.toBPS().round(1),
+                                jumpStrength.toJump().round(1),
                                 health.round(1)
                             ).formatted(Formatting.GREEN)
                         )
