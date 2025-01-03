@@ -9,10 +9,6 @@
 <div align="center">
     <a href="https://lyzev.github.io/discord"><img src="https://img.shields.io/discord/610120595765723137?logo=discord" alt="Discord"/></a>
     <br><br>
-    <img src="https://img.shields.io/github/downloads/Lyzev/HorsePower/total" alt="GitHub downloads"/>
-    <br>
-    <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/Lyzev/HorsePower?include_prereleases&sort=date&color=orange">
-    <br><br>
     <img src="https://img.shields.io/github/last-commit/Lyzev/HorsePower" alt="GitHub last commit"/>
     <img src="https://img.shields.io/github/commit-activity/w/Lyzev/HorsePower" alt="GitHub commit activity"/>
     <br>
