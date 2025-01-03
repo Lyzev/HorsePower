@@ -2,7 +2,7 @@
   "horsepower.search.error": "No horses were found nearby.",
   "horsepower.search.success.one": "One horse was found nearby and highlighted with a glow.",
   "horsepower.search.success.two": "The two best horses were found nearby and highlighted with a glow.",
-  "horsepower.stats.error": "No horse is in your crosshair.",
+  "horsepower.stats.error": "No horse is currently in your crosshair.",
   "horsepower.stats.success": "Horse stats: Speed: %1$s, Jump Strength: %2$s, Health: %3$s",
   "horsepower.options": "HorsePower Options",
   "option.modmenu.show_inventory": "Show in inventory",
