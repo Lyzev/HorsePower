@@ -1,6 +1,7 @@
 {
   "horsepower.search.error": "Keine Pferde in der Nähe gefunden.",
   "horsepower.search.success": "Die %1$s besten Pferde wurden in der Nähe basierend auf %2$s gefunden und mit einem Leuchten hervorgehoben.",
+  "horsepower.search.disabled": "Die Pferdesuche wurde vom Server deaktiviert.",
   "horsepower.stats.error": "Kein Pferd befindet sich derzeit in deinem Fadenkreuz.",
   "horsepower.stats.success": "Pferdestatistiken: Geschwindigkeit: %1$s, Sprungkraft: %2$s, Gesundheit: %3$s",
   "horsepower.options": "HorsePower Optionen",

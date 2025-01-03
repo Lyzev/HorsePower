@@ -1,6 +1,7 @@
 {
   "horsepower.search.error": "Поблизости не найдено лошадей.",
   "horsepower.search.success": "Лучшие %1$s лошади были найдены поблизости на основе %2$s и выделены свечением.",
+  "horsepower.search.disabled": "Поиск лошадей отключен сервером.",
   "horsepower.stats.error": "В данный момент в вашем прицеле нет лошади.",
   "horsepower.stats.success": "Статистика лошади: Скорость: %1$s, Сила прыжка: %2$s, Здоровье: %3$s",
   "horsepower.options": "Настройки HorsePower",

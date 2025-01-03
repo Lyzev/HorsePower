@@ -1,6 +1,7 @@
 {
   "horsepower.search.error": "Aucun cheval trouvé à proximité.",
   "horsepower.search.success": "Les %1$s meilleurs chevaux ont été trouvés à proximité en fonction de %2$s et mis en évidence avec une lueur.",
+  "horsepower.search.disabled": "La recherche de chevaux est désactivée par le serveur.",
   "horsepower.stats.error": "Aucun cheval n'est actuellement dans votre viseur.",
   "horsepower.stats.success": "Statistiques du cheval : Vitesse : %1$s, Force de saut : %2$s, Santé : %3$s",
   "horsepower.options": "Options HorsePower",

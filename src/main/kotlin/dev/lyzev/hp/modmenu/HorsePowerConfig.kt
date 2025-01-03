@@ -21,6 +21,7 @@ import com.terraformersmc.modmenu.config.FileOnlyConfig
 import com.terraformersmc.modmenu.config.option.BooleanConfigOption
 import com.terraformersmc.modmenu.config.option.OptionConvertable
 import net.minecraft.client.option.SimpleOption
+import net.minecraft.util.Identifier
 import java.lang.reflect.Modifier
 
 object HorsePowerConfig {
@@ -30,6 +31,9 @@ object HorsePowerConfig {
     val SHOW_PERCENTAGE = BooleanConfigOption("show_percentage", true)
     val SHOW_AVERAGE = BooleanConfigOption("show_average", true)
     val SHOW_HUD = BooleanConfigOption("show_hud", true)
+
+    val SEARCH_ALLOWED_PACKET_ID = Identifier.of("horsepower", "search")
+    var isSearchCommandAllowed = true
 
     fun asOptions(): Array<SimpleOption<*>> {
         val options = ArrayList<SimpleOption<*>>()

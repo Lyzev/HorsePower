@@ -22,6 +22,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import dev.lyzev.hp.modmenu.HorsePowerConfig
 import dev.lyzev.hp.modmenu.HorsePowerConfigManager
+import dev.lyzev.hp.payload.SearchAllowedPayload
 import dev.lyzev.hp.util.HorseStatsRenderer.render
 import dev.lyzev.hp.util.round
 import dev.lyzev.hp.util.toBPS
@@ -30,7 +31,10 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
 import net.minecraft.entity.attribute.EntityAttributes
@@ -38,6 +42,7 @@ import net.minecraft.entity.passive.AbstractHorseEntity
 import net.minecraft.entity.passive.DonkeyEntity
 import net.minecraft.entity.passive.HorseEntity
 import net.minecraft.entity.passive.MuleEntity
+import net.minecraft.network.packet.CustomPayload
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 
@@ -111,9 +116,32 @@ object HorsePower : ClientModInitializer {
                 }
             }
         })
+
+        C2SPlayChannelEvents.REGISTER.register(C2SPlayChannelEvents.Register { handler, sender, client, channels ->
+            HorsePowerConfig.isSearchCommandAllowed = true
+            println("Search command is allowed!!!!!!!!")
+        })
+
+        PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
+
+        ClientConfigurationNetworking.registerGlobalReceiver(CustomPayload.Id(HorsePowerConfig.SEARCH_ALLOWED_PACKET_ID)) { payload: SearchAllowedPayload, context ->
+            context.client().execute {
+                HorsePowerConfig.isSearchCommandAllowed = payload.allowed
+                if (!payload.allowed) {
+                    mc.inGameHud.chatHud.addMessage(
+                        Text.translatable("horsepower.search.disabled").formatted(Formatting.RED)
+                    )
+                }
+                println("Search command is ${if (payload.allowed) "allowed" else "disabled"}!!!!!!!!!")
+            }
+        }
     }
 
     private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int): Int {
+        if (!HorsePowerConfig.isSearchCommandAllowed) {
+            context.source.sendError(Text.translatable("horsepower.search.disabled"))
+            return 0
+        }
         val horses =
             mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }.sortedBy {
                     val horse = it as AbstractHorseEntity
