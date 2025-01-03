@@ -22,16 +22,15 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import dev.lyzev.hp.client.modmenu.HorsePowerConfig
 import dev.lyzev.hp.client.modmenu.HorsePowerConfigManager
-import dev.lyzev.hp.main.payload.SearchAllowedPayload
 import dev.lyzev.hp.client.util.HorseStatsRenderer.render
 import dev.lyzev.hp.client.util.round
 import dev.lyzev.hp.client.util.toBPS
 import dev.lyzev.hp.client.util.toJump
+import dev.lyzev.hp.main.payload.SearchAllowedPayload
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
@@ -43,9 +42,9 @@ import net.minecraft.entity.passive.AbstractHorseEntity
 import net.minecraft.entity.passive.DonkeyEntity
 import net.minecraft.entity.passive.HorseEntity
 import net.minecraft.entity.passive.MuleEntity
-import net.minecraft.network.packet.CustomPayload
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
+import org.apache.logging.log4j.LogManager
 
 
 object HorsePowerClient : ClientModInitializer {
@@ -53,12 +52,16 @@ object HorsePowerClient : ClientModInitializer {
     const val MOD_ID = "horsepower"
 
     val mc = MinecraftClient.getInstance()
+    private val logger = LogManager.getLogger(HorsePowerClient::class.java)
 
     var last = System.currentTimeMillis()
     val horses = mutableListOf<Entity>()
 
     override fun onInitializeClient() {
+        logger.info("Initializing HorsePowerClient")
+
         HorsePowerConfigManager.initializeConfig()
+        logger.info("Config initialized")
 
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
             dispatcher.register(
@@ -101,6 +104,7 @@ object HorsePowerClient : ClientModInitializer {
                     }
                 })
         })
+        logger.info("Commands registered")
 
         HudRenderCallback.EVENT.register(HudRenderCallback { drawContext, _ ->
             if (HorsePowerConfig.SHOW_HUD.value) {
@@ -117,10 +121,12 @@ object HorsePowerClient : ClientModInitializer {
                 }
             }
         })
+        logger.info("HudRenderCallback registered")
 
         ClientLoginConnectionEvents.INIT.register(ClientLoginConnectionEvents.Init { handler, client ->
             HorsePowerConfig.isSearchCommandAllowed = true
         })
+        logger.info("ClientLoginConnectionEvents registered")
 
         PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
 
@@ -134,6 +140,7 @@ object HorsePowerClient : ClientModInitializer {
                 }
             }
         }
+        logger.info("SearchAllowedPayload registered")
     }
 
     private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int): Int {

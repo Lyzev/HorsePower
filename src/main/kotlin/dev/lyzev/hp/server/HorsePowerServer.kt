@@ -17,23 +17,35 @@
 
 package dev.lyzev.hp.server
 
+import dev.lyzev.hp.client.HorsePowerClient
 import dev.lyzev.hp.main.payload.SearchAllowedPayload
 import net.fabricmc.api.DedicatedServerModInitializer
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking
+import org.apache.logging.log4j.LogManager
+import kotlin.math.log
 
 object HorsePowerServer : DedicatedServerModInitializer {
 
+    private val logger = LogManager.getLogger(HorsePowerClient::class.java)
+
     override fun onInitializeServer() {
+        logger.info("Initializing HorsePower server")
+
         PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
+        logger.info("Registered SearchAllowedPayload")
 
         val payload = SearchAllowedPayload(false)
 
         ServerConfigurationConnectionEvents.CONFIGURE.register { handler, sender ->
             if (ServerConfigurationNetworking.canSend(handler, SearchAllowedPayload.ID)) {
                 ServerConfigurationNetworking.send(handler, payload)
+                logger.info("Disabled search command for player ${sender.name}")
+            } else {
+                logger.error("Failed to send SearchAllowedPayload to player ${sender.name}")
             }
         }
+        logger.info("Registered ServerConfigurationConnectionEvents")
     }
 }
