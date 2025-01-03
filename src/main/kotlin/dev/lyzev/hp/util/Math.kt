@@ -18,6 +18,7 @@
 package dev.lyzev.hp.util
 
 import net.minecraft.entity.LivingEntity
+import kotlin.math.pow
 
 /**
  * Constants for unit conversion.
@@ -58,4 +59,10 @@ fun unit2jump(unit: Double): Double {
         velocity = (velocity - LivingEntity.GRAVITY) * FACTOR
     }
     return jumpHeight
+}
+
+fun Double.round(decimals: Int): Double {
+    require(decimals >= 0)
+    val multiplier = 10.0.pow(decimals)
+    return kotlin.math.round(this * multiplier) / multiplier
 }
