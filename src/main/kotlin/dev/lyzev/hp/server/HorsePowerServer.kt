@@ -41,9 +41,9 @@ object HorsePowerServer : DedicatedServerModInitializer {
         ServerConfigurationConnectionEvents.CONFIGURE.register { handler, sender ->
             if (ServerConfigurationNetworking.canSend(handler, SearchAllowedPayload.ID)) {
                 ServerConfigurationNetworking.send(handler, payload)
-                logger.info("Disabled search command for player ${sender.name}")
+                logger.info("Disabled search command for player.")
             } else {
-                logger.error("Failed to send SearchAllowedPayload to player ${sender.name}")
+                logger.error("Failed to send SearchAllowedPayload to player.")
             }
         }
         logger.info("Registered ServerConfigurationConnectionEvents")
