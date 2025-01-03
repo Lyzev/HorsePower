@@ -15,22 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.hp.modmenu
+package dev.lyzev.hp.client.modmenu
 
-import net.minecraft.client.MinecraftClient
+import com.terraformersmc.modmenu.api.ConfigScreenFactory
+import com.terraformersmc.modmenu.api.ModMenuApi
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.screen.option.GameOptionsScreen
-import net.minecraft.text.Text
 
-class HorsePowerConfigScreen(parent: Screen) : GameOptionsScreen(parent, MinecraftClient.getInstance().options, Text.translatable("horsepower.options")) {
-
-    override fun addOptions() {
-        if (this.body != null) {
-            body!!.addAll(*HorsePowerConfig.asOptions())
-        }
-    }
-
-    override fun removed() {
-        HorsePowerConfigManager.save()
+class HorsePowerModMenu : ModMenuApi {
+    override fun getModConfigScreenFactory(): ConfigScreenFactory<Screen> {
+        return ConfigScreenFactory { parent -> HorsePowerConfigScreen(parent) }
     }
 }

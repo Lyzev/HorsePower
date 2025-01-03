@@ -15,24 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.hp
+package dev.lyzev.hp.client
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
-import dev.lyzev.hp.modmenu.HorsePowerConfig
-import dev.lyzev.hp.modmenu.HorsePowerConfigManager
-import dev.lyzev.hp.payload.SearchAllowedPayload
-import dev.lyzev.hp.util.HorseStatsRenderer.render
-import dev.lyzev.hp.util.round
-import dev.lyzev.hp.util.toBPS
-import dev.lyzev.hp.util.toJump
+import dev.lyzev.hp.client.modmenu.HorsePowerConfig
+import dev.lyzev.hp.client.modmenu.HorsePowerConfigManager
+import dev.lyzev.hp.main.payload.SearchAllowedPayload
+import dev.lyzev.hp.client.util.HorseStatsRenderer.render
+import dev.lyzev.hp.client.util.round
+import dev.lyzev.hp.client.util.toBPS
+import dev.lyzev.hp.client.util.toJump
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.minecraft.client.MinecraftClient
@@ -47,7 +48,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 
 
-object HorsePower : ClientModInitializer {
+object HorsePowerClient : ClientModInitializer {
 
     const val MOD_ID = "horsepower"
 
@@ -117,14 +118,13 @@ object HorsePower : ClientModInitializer {
             }
         })
 
-        C2SPlayChannelEvents.REGISTER.register(C2SPlayChannelEvents.Register { handler, sender, client, channels ->
+        ClientLoginConnectionEvents.INIT.register(ClientLoginConnectionEvents.Init { handler, client ->
             HorsePowerConfig.isSearchCommandAllowed = true
-            println("Search command is allowed!!!!!!!!")
         })
 
         PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
 
-        ClientConfigurationNetworking.registerGlobalReceiver(CustomPayload.Id(HorsePowerConfig.SEARCH_ALLOWED_PACKET_ID)) { payload: SearchAllowedPayload, context ->
+        ClientConfigurationNetworking.registerGlobalReceiver(SearchAllowedPayload.ID) { payload: SearchAllowedPayload, context ->
             context.client().execute {
                 HorsePowerConfig.isSearchCommandAllowed = payload.allowed
                 if (!payload.allowed) {
@@ -132,7 +132,6 @@ object HorsePower : ClientModInitializer {
                         Text.translatable("horsepower.search.disabled").formatted(Formatting.RED)
                     )
                 }
-                println("Search command is ${if (payload.allowed) "allowed" else "disabled"}!!!!!!!!!")
             }
         }
     }
@@ -171,11 +170,11 @@ object HorsePower : ClientModInitializer {
             0
         } else {
             last = System.currentTimeMillis()
-            this.horses.clear()
-            this.horses += horses.takeLast(amount)
+            HorsePowerClient.horses.clear()
+            HorsePowerClient.horses += horses.takeLast(amount)
             context.source.sendFeedback(
                 Text.translatable(
-                    "horsepower.search.success", this.horses.size, criteria
+                    "horsepower.search.success", HorsePowerClient.horses.size, criteria
                 ).withColor(Formatting.GREEN.colorValue!!)
             )
             1

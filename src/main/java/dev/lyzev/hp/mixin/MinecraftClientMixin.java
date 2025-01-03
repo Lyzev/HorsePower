@@ -17,7 +17,7 @@
 
 package dev.lyzev.hp.mixin;
 
-import dev.lyzev.hp.HorsePower;
+import dev.lyzev.hp.client.HorsePowerClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -32,7 +32,7 @@ public class MinecraftClientMixin {
     @Inject(method = "hasOutline", at = @At("HEAD"), cancellable = true)
     private void onHasOutline(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (entity instanceof AbstractHorseEntity) {
-            if (System.currentTimeMillis() - HorsePower.INSTANCE.getLast() <= 5000 && HorsePower.INSTANCE.getHorses().contains(entity)) {
+            if (System.currentTimeMillis() - HorsePowerClient.INSTANCE.getLast() <= 5000 && HorsePowerClient.INSTANCE.getHorses().contains(entity)) {
                 cir.setReturnValue(true);
                 cir.cancel();
             }

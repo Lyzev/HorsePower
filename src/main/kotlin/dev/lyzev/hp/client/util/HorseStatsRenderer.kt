@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.hp.util
+package dev.lyzev.hp.client.util
 
-import dev.lyzev.hp.HorsePower
-import dev.lyzev.hp.modmenu.HorsePowerConfig
+import dev.lyzev.hp.client.HorsePowerClient
+import dev.lyzev.hp.client.modmenu.HorsePowerConfig
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.entity.attribute.EntityAttributes
@@ -30,7 +30,7 @@ import kotlin.math.roundToInt
 
 object HorseStatsRenderer {
 
-    private val BACKGROUND_TEXTURE = Identifier.of(HorsePower.MOD_ID, "textures/gui/container/background.png")
+    private val BACKGROUND_TEXTURE = Identifier.of(HorsePowerClient.MOD_ID, "textures/gui/container/background.png")
     private const val WHITE = 0xFFFFFFFF.toInt()
     private val FORMATTINGS = arrayOf(Formatting.DARK_RED, Formatting.RED, Formatting.GOLD, Formatting.YELLOW, Formatting.GREEN, Formatting.DARK_GREEN)
 
@@ -65,7 +65,7 @@ object HorseStatsRenderer {
     private fun DrawContext.drawAttribute(symbol: String, value: Double, percentage: Double, minValue: Double, maxValue: Double, x: Int, y: Int, offsetY: Int, mouseX: Int, mouseY: Int) {
         val text = buildAttributeText(symbol, value, percentage)
         val formatting = getFormatting(percentage)
-        drawTextWithShadow(HorsePower.mc.textRenderer, Text.literal(text).formatted(formatting), x, y + offsetY, WHITE)
+        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal(text).formatted(formatting), x, y + offsetY, WHITE)
 
         if (isMouseHovering(mouseX, mouseY, x, y + offsetY, text)) {
             drawTooltip(minValue, maxValue, mouseX, mouseY)
@@ -95,7 +95,7 @@ object HorseStatsRenderer {
     }
 
     private fun isMouseHovering(mouseX: Int, mouseY: Int, x: Int, y: Int, text: String): Boolean {
-        val textWidth = HorsePower.mc.textRenderer.getWidth(text)
+        val textWidth = HorsePowerClient.mc.textRenderer.getWidth(text)
         return mouseX in x..(x + textWidth) && mouseY in y..(y + 9)
     }
 
@@ -104,12 +104,12 @@ object HorseStatsRenderer {
             Text.literal("Min: ${minValue.round(1)}").formatted(Formatting.DARK_RED),
             Text.literal("Max: ${maxValue.round(1)}").formatted(Formatting.DARK_GREEN)
         )
-        drawTooltip(HorsePower.mc.textRenderer, hoverText, mouseX, mouseY)
+        drawTooltip(HorsePowerClient.mc.textRenderer, hoverText, mouseX, mouseY)
     }
 
     private fun DrawContext.drawAverage(speedPercentage: Double, jumpPercentage: Double, healthPercentage: Double, x: Int, y: Int) {
         val average = (speedPercentage + jumpPercentage + healthPercentage) / 3
         val averageFormatting = getFormatting(average)
-        drawTextWithShadow(HorsePower.mc.textRenderer, Text.literal("Average: ${(average * 100).roundToInt()}%").formatted(averageFormatting), x, y, WHITE)
+        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal("Average: ${(average * 100).roundToInt()}%").formatted(averageFormatting), x, y, WHITE)
     }
 }

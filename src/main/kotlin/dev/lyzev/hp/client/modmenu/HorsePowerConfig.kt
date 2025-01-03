@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.hp.modmenu
+package dev.lyzev.hp.client.modmenu
 
 import com.terraformersmc.modmenu.config.FileOnlyConfig
 import com.terraformersmc.modmenu.config.option.BooleanConfigOption
@@ -32,7 +32,6 @@ object HorsePowerConfig {
     val SHOW_AVERAGE = BooleanConfigOption("show_average", true)
     val SHOW_HUD = BooleanConfigOption("show_hud", true)
 
-    val SEARCH_ALLOWED_PACKET_ID = Identifier.of("horsepower", "search")
     var isSearchCommandAllowed = true
 
     fun asOptions(): Array<SimpleOption<*>> {

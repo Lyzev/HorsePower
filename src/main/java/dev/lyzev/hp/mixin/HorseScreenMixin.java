@@ -17,9 +17,9 @@
 
 package dev.lyzev.hp.mixin;
 
-import dev.lyzev.hp.HorsePower;
-import dev.lyzev.hp.modmenu.HorsePowerConfig;
-import dev.lyzev.hp.util.HorseStatsRenderer;
+import dev.lyzev.hp.client.HorsePowerClient;
+import dev.lyzev.hp.client.modmenu.HorsePowerConfig;
+import dev.lyzev.hp.client.util.HorseStatsRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
 import net.minecraft.entity.passive.AbstractHorseEntity;
@@ -43,8 +43,8 @@ public class HorseScreenMixin {
 
         var imageWidth = 176;
         var imageHeight = 166;
-        var x = HorsePower.INSTANCE.getMc().getWindow().getScaledWidth() / 2 + imageWidth / 2;
-        var y = (HorsePower.INSTANCE.getMc().getWindow().getScaledHeight() - imageHeight) / 2;
+        var x = HorsePowerClient.INSTANCE.getMc().getWindow().getScaledWidth() / 2 + imageWidth / 2;
+        var y = (HorsePowerClient.INSTANCE.getMc().getWindow().getScaledHeight() - imageHeight) / 2;
 
         HorseStatsRenderer.INSTANCE.render(drawContext, entity, x + 10, y + 5, mouseX, mouseY);
     }

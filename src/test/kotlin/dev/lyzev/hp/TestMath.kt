@@ -17,7 +17,7 @@
 
 package dev.lyzev.hp
 
-import dev.lyzev.hp.util.toJump
+import dev.lyzev.hp.client.util.toJump
 
 fun main() {
     val movementSpeed = 0.3375

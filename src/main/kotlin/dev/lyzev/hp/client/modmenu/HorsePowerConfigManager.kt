@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package dev.lyzev.hp.modmenu
+package dev.lyzev.hp.client.modmenu
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -24,7 +24,7 @@ import com.terraformersmc.modmenu.config.option.BooleanConfigOption
 import com.terraformersmc.modmenu.config.option.ConfigOptionStorage
 import com.terraformersmc.modmenu.config.option.EnumConfigOption
 import com.terraformersmc.modmenu.config.option.StringSetConfigOption
-import dev.lyzev.hp.HorsePower
+import dev.lyzev.hp.client.HorsePowerClient
 import net.fabricmc.loader.api.FabricLoader
 import java.io.IOException
 import java.nio.file.Files
@@ -35,7 +35,7 @@ import kotlin.reflect.jvm.isAccessible
 object HorsePowerConfigManager {
 
     private val path: Path by lazy {
-        FabricLoader.getInstance().configDir.resolve("${HorsePower.MOD_ID}.json")
+        FabricLoader.getInstance().configDir.resolve("${HorsePowerClient.MOD_ID}.json")
     }
 
     fun initializeConfig() {

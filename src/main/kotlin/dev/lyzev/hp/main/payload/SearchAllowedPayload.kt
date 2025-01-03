@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package dev.lyzev.hp.payload
+package dev.lyzev.hp.main.payload
 
-import dev.lyzev.hp.modmenu.HorsePowerConfig
 import net.minecraft.network.PacketByteBuf
-import net.minecraft.network.RegistryByteBuf
 import net.minecraft.network.codec.PacketCodec
 import net.minecraft.network.codec.PacketCodecs
 import net.minecraft.network.packet.CustomPayload
+import net.minecraft.util.Identifier
 
 @JvmRecord
 data class SearchAllowedPayload(val allowed: Boolean) : CustomPayload {
@@ -29,7 +28,9 @@ data class SearchAllowedPayload(val allowed: Boolean) : CustomPayload {
     override fun getId() = ID
 
     companion object {
-        val ID = CustomPayload.Id<SearchAllowedPayload>(HorsePowerConfig.SEARCH_ALLOWED_PACKET_ID)
+        private val PACKET_ID = Identifier.of("horsepower", "search")
+
+        val ID = CustomPayload.Id<SearchAllowedPayload>(PACKET_ID)
         val CODEC: PacketCodec<PacketByteBuf, SearchAllowedPayload> =
             PacketCodec.tuple(
                 PacketCodecs.BOOLEAN, SearchAllowedPayload::allowed

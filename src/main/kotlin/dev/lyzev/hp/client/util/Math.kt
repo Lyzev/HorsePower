@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package dev.lyzev.hp.util
+package dev.lyzev.hp.client.util
 
 import net.minecraft.entity.LivingEntity
 import kotlin.math.pow
