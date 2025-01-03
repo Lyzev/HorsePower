@@ -1,0 +1,22 @@
+{
+  "horsepower.search.error": "Aucun cheval trouvé à proximité.",
+  "horsepower.search.success": "Les %1$s meilleurs chevaux ont été trouvés à proximité en fonction de %2$s et mis en évidence avec une lueur.",
+  "horsepower.stats.error": "Aucun cheval n'est actuellement dans votre viseur.",
+  "horsepower.stats.success": "Statistiques du cheval : Vitesse : %1$s, Force de saut : %2$s, Santé : %3$s",
+  "horsepower.options": "Options HorsePower",
+  "option.modmenu.show_inventory": "Afficher dans l'inventaire",
+  "option.modmenu.show_inventory.true": "ACTIVÉ",
+  "option.modmenu.show_inventory.false": "DÉSACTIVÉ",
+  "option.modmenu.show_hud": "Afficher les statistiques du cheval ciblé",
+  "option.modmenu.show_hud.true": "ACTIVÉ",
+  "option.modmenu.show_hud.false": "DÉSACTIVÉ",
+  "option.modmenu.show_unit": "Afficher l'unité",
+  "option.modmenu.show_unit.true": "ACTIVÉ",
+  "option.modmenu.show_unit.false": "DÉSACTIVÉ",
+  "option.modmenu.show_percentage": "Afficher le pourcentage",
+  "option.modmenu.show_percentage.true": "ACTIVÉ",
+  "option.modmenu.show_percentage.false": "DÉSACTIVÉ",
+  "option.modmenu.show_average": "Afficher la moyenne",
+  "option.modmenu.show_average.true": "ACTIVÉ",
+  "option.modmenu.show_average.false": "DÉSACTIVÉ"
+}

@@ -1,0 +1,22 @@
+{
+  "horsepower.search.error": "Keine Pferde in der Nähe gefunden.",
+  "horsepower.search.success": "Die %1$s besten Pferde wurden in der Nähe basierend auf %2$s gefunden und mit einem Leuchten hervorgehoben.",
+  "horsepower.stats.error": "Kein Pferd befindet sich derzeit in deinem Fadenkreuz.",
+  "horsepower.stats.success": "Pferdestatistiken: Geschwindigkeit: %1$s, Sprungkraft: %2$s, Gesundheit: %3$s",
+  "horsepower.options": "HorsePower Optionen",
+  "option.modmenu.show_inventory": "Im Inventar anzeigen",
+  "option.modmenu.show_inventory.true": "AN",
+  "option.modmenu.show_inventory.false": "AUS",
+  "option.modmenu.show_hud": "Statistiken des anvisierten Pferdes anzeigen",
+  "option.modmenu.show_hud.true": "AN",
+  "option.modmenu.show_hud.false": "AUS",
+  "option.modmenu.show_unit": "Einheit anzeigen",
+  "option.modmenu.show_unit.true": "AN",
+  "option.modmenu.show_unit.false": "AUS",
+  "option.modmenu.show_percentage": "Prozentsatz anzeigen",
+  "option.modmenu.show_percentage.true": "AN",
+  "option.modmenu.show_percentage.false": "AUS",
+  "option.modmenu.show_average": "Durchschnitt anzeigen",
+  "option.modmenu.show_average.true": "AN",
+  "option.modmenu.show_average.false": "AUS"
+}
