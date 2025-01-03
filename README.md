@@ -74,6 +74,7 @@ value. Additionally, it includes a search function to find the best horse based 
 ### Commands
 
 - **/search <criteria> <amount>**: Searches for the best <amount> horses in the area based on the criteria.
+    - Server opt-out available, see [Server](#server).
 - **/stats**: Displays the stats of the horse you are currently looking at.
 
 ## Screenshots
