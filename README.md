@@ -66,6 +66,16 @@ This project is a handy tool for horse owners, designed to evaluate a horse's po
 jump height, and health. It is user-friendly and helps horse owners, especially breeders, to determine their horse's
 value. Additionally, it includes a search function to find the best horse based on specific stats in your area.
 
+## Features
+
+- **HUD**: Displays the horse's power in the HUD.
+- **Inventory**: Shows the horse's power in the inventory.
+
+### Commands
+
+- **/search <criteria> <amount>**: Searches for the best <amount> horses in the area based on the criteria.
+- **/stats**: Displays the stats of the horse you are currently looking at.
+
 ## Screenshots
 
 ![HUD](assets/hud.png)
