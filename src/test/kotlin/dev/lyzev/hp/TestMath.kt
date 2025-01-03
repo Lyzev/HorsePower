@@ -17,14 +17,13 @@
 
 package dev.lyzev.hp
 
-import dev.lyzev.hp.util.Math.unit2bps
-import dev.lyzev.hp.util.Math.unit2jump
+import dev.lyzev.hp.util.toJump
 
 fun main() {
     val movementSpeed = 0.3375
     val jumpHeight = 0.5
 
-    println("Unit to BPS: ${unit2bps(movementSpeed)}")
+    println("Unit to BPS: ${movementSpeed.toJump()}")
 
-    println("Unit to Jump: ${unit2jump(jumpHeight)}")
+    println("Unit to Jump: ${jumpHeight.toJump()}")
 }
