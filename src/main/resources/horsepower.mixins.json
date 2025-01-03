@@ -7,7 +7,6 @@
   ],
   "client": [
     "HorseScreenMixin",
-    "InGameHudMixin",
     "MinecraftClientMixin"
   ],
   "injectors": {

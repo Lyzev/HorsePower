@@ -20,7 +20,9 @@ package dev.lyzev.hp
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
+import dev.lyzev.hp.modmenu.HorsePowerConfig
 import dev.lyzev.hp.modmenu.HorsePowerConfigManager
+import dev.lyzev.hp.util.HorseStatsRenderer.render
 import dev.lyzev.hp.util.round
 import dev.lyzev.hp.util.toBPS
 import dev.lyzev.hp.util.toJump
@@ -28,6 +30,7 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
 import net.minecraft.entity.attribute.EntityAttributes
@@ -91,6 +94,22 @@ object HorsePower : ClientModInitializer {
                         0
                     }
                 })
+        })
+
+        HudRenderCallback.EVENT.register(HudRenderCallback { drawContext, _ ->
+            if (HorsePowerConfig.SHOW_HUD.value) {
+                val entity = mc.targetedEntity
+                if (entity is AbstractHorseEntity) {
+                    render(
+                        drawContext,
+                        entity,
+                        mc.window.scaledWidth / 2 + 10,
+                        mc.window.scaledHeight / 2 + 10,
+                        0,
+                        0
+                    )
+                }
+            }
         })
     }
 
