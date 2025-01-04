@@ -79,6 +79,10 @@ value. Additionally, it includes a search function to find the best horse based 
 
 ## Screenshots
 
+**Search Command:**
+![Search](assets/search.png)
+
+**HUD, Inventory, and Settings:**
 ![HUD](assets/hud.png)
 
 ![Inventory](assets/inventory.png)
