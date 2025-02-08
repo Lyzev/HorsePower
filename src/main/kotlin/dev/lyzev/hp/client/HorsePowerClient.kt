@@ -81,10 +81,10 @@ object HorsePowerClient : ClientModInitializer {
                                             .executes { context ->
                                                 val criteria = StringArgumentType.getString(context, "criteria")
                                                 val amount = IntegerArgumentType.getInteger(context, "amount")
-                                                val dir = StringArgumentType.getString(context, "direction")
+                                                val search_direction = StringArgumentType.getString(context, "direction")
                                                     .equals("best", ignoreCase = true)
 
-                                                executeSearch(context, criteria, amount, dir)
+                                                executeSearch(context, criteria, amount, search_direction)
                                                 1
                                             }
                                     )
@@ -161,7 +161,7 @@ object HorsePowerClient : ClientModInitializer {
         logger.info("SearchAllowedPayload registered")
     }
 
-    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, dir: Boolean): Int {
+    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, search_direction: Boolean): Int {
         if (!HorsePowerConfig.isSearchCommandAllowed) {
             context.source.sendError(Text.translatable("horsepower.search.disabled"))
             return 0
@@ -196,7 +196,7 @@ object HorsePowerClient : ClientModInitializer {
         } else {
             last = System.currentTimeMillis()
             HorsePowerClient.horses.clear()
-            if (dir) {
+            if (search_direction) {
                 HorsePowerClient.horses += horses.takeLast(amount)
             }else{
                 HorsePowerClient.horses += horses.take(amount)
@@ -206,7 +206,7 @@ object HorsePowerClient : ClientModInitializer {
                     "horsepower.search.success",
                     HorsePowerClient.horses.size,
                     criteria,
-                    if (dir) "best" else "worst"
+                    if (search_direction) "best" else "worst"
                 ).withColor(Formatting.GREEN.colorValue!!)
             )
             1
