@@ -67,19 +67,37 @@ object HorsePowerClient : ClientModInitializer {
             dispatcher.register(
                 ClientCommandManager.literal("search")
                     .then(
-                        ClientCommandManager.argument("criteria", StringArgumentType.word()).suggests { _, builder ->
-                        builder.suggest("health").suggest("speed").suggest("jump").suggest("average").buildFuture()
-                    }.then(
-                        ClientCommandManager.argument("amount", IntegerArgumentType.integer(1, 10))
-                            .executes { context ->
-                                val criteria = StringArgumentType.getString(context, "criteria")
-                                val amount = IntegerArgumentType.getInteger(context, "amount")
-                                executeSearch(context, criteria, amount)
-                            })).executes { context: CommandContext<FabricClientCommandSource> ->
+                        ClientCommandManager.argument("criteria", StringArgumentType.word())
+                            .suggests { _, builder ->
+                                builder.suggest("health").suggest("speed").suggest("jump").suggest("average").buildFuture()
+                            }
+                            .then(
+                                ClientCommandManager.argument("amount", IntegerArgumentType.integer(1, 100))
+                                    .then(
+                                        ClientCommandManager.argument("direction", StringArgumentType.word())
+                                            .suggests { _, builder ->
+                                                builder.suggest("best").suggest("worst").buildFuture()
+                                            }
+                                            .executes { context ->
+                                                val criteria = StringArgumentType.getString(context, "criteria")
+                                                val amount = IntegerArgumentType.getInteger(context, "amount")
+                                                val dir = StringArgumentType.getString(context, "direction")
+                                                    .equals("best", ignoreCase = true)
+
+                                                executeSearch(context, criteria, amount, dir)
+                                                1
+                                            }
+                                    )
+                            )
+                    )
+                    .executes { context ->
                         val criteria = "average"
                         val amount = 2
-                        executeSearch(context, criteria, amount)
-                    })
+                        val dir = true
+                        executeSearch(context, criteria, amount, dir)
+                        1
+                    }
+            )
             dispatcher.register(
                 ClientCommandManager.literal("stats").executes { context: CommandContext<FabricClientCommandSource> ->
                     val targetEntity = mc.targetedEntity
@@ -143,45 +161,52 @@ object HorsePowerClient : ClientModInitializer {
         logger.info("SearchAllowedPayload registered")
     }
 
-    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int): Int {
+    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, dir: Boolean): Int {
         if (!HorsePowerConfig.isSearchCommandAllowed) {
             context.source.sendError(Text.translatable("horsepower.search.disabled"))
             return 0
         }
         val horses =
             mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }.sortedBy {
-                    val horse = it as AbstractHorseEntity
-                    when (criteria) {
-                        "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
-                        "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                        "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
-                        else -> {
-                            val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
-                                    AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
-                                    AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                                ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                            val jumpStrength = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(
-                                    AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
-                                    AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                                ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                            val health = horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(
-                                    AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
-                                    AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                                ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                            movementSpeed + jumpStrength + health
-                        }
+                val horse = it as AbstractHorseEntity
+                when (criteria) {
+                    "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
+                    "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
+                    "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
+                    else -> {
+                        val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
+                            AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
+                            AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
+                        ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
+                        val jumpStrength = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(
+                            AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
+                            AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
+                        ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
+                        val health = horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(
+                            AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
+                            AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
+                        ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
+                        movementSpeed + jumpStrength + health
                     }
                 }
+            }
         return if (horses.isEmpty()) {
             context.source.sendError(Text.translatable("horsepower.search.error"))
             0
         } else {
             last = System.currentTimeMillis()
             HorsePowerClient.horses.clear()
-            HorsePowerClient.horses += horses.takeLast(amount)
+            if (dir) {
+                HorsePowerClient.horses += horses.takeLast(amount)
+            }else{
+                HorsePowerClient.horses += horses.take(amount)
+            }
             context.source.sendFeedback(
                 Text.translatable(
-                    "horsepower.search.success", HorsePowerClient.horses.size, criteria
+                    "horsepower.search.success",
+                    HorsePowerClient.horses.size,
+                    criteria,
+                    if (dir) "best" else "worst"
                 ).withColor(Formatting.GREEN.colorValue!!)
             )
             1
