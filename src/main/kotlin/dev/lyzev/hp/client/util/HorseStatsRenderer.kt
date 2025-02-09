@@ -26,7 +26,6 @@ import net.minecraft.entity.passive.AbstractHorseEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
-import kotlin.math.roundToInt
 
 object HorseStatsRenderer {
 
@@ -37,9 +36,9 @@ object HorseStatsRenderer {
     fun render(drawContext: DrawContext, entity: AbstractHorseEntity, x: Int, y: Int, mouseX: Int, mouseY: Int) {
         if (!HorsePowerConfig.SHOW_INVENTORY.value) return
 
-        val speed = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toBPS().round(1)
-        val jump = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toJump().round(1)
-        val health = entity.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).round(1)
+        val speed = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toBPS().round(3)
+        val jump = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toJump().round(3)
+        val health = entity.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).round(3)
 
         val speedPercentage = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toPercentage(AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS)
         val jumpPercentage = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toPercentage(AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS)
@@ -79,7 +78,7 @@ object HorseStatsRenderer {
                 append(symbol.getUnit())
             }
             if (HorsePowerConfig.SHOW_PERCENTAGE.value) {
-                append(" (").append((percentage * 100).roundToInt()).append("%)")
+                append(" (").append((percentage * 100).round(2)).append("%)")
             }
         }
     }
@@ -101,8 +100,8 @@ object HorseStatsRenderer {
 
     private fun DrawContext.drawTooltip(minValue: Double, maxValue: Double, mouseX: Int, mouseY: Int) {
         val hoverText = listOf(
-            Text.literal("Min: ${minValue.round(1)}").formatted(Formatting.DARK_RED),
-            Text.literal("Max: ${maxValue.round(1)}").formatted(Formatting.DARK_GREEN)
+            Text.literal("Min: ${minValue.round(2)}").formatted(Formatting.DARK_RED),
+            Text.literal("Max: ${maxValue.round(2)}").formatted(Formatting.DARK_GREEN)
         )
         drawTooltip(HorsePowerClient.mc.textRenderer, hoverText, mouseX, mouseY)
     }
@@ -110,6 +109,6 @@ object HorseStatsRenderer {
     private fun DrawContext.drawAverage(speedPercentage: Double, jumpPercentage: Double, healthPercentage: Double, x: Int, y: Int) {
         val average = (speedPercentage + jumpPercentage + healthPercentage) / 3
         val averageFormatting = getFormatting(average)
-        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal("Average: ${(average * 100).roundToInt()}%").formatted(averageFormatting), x, y, WHITE)
+        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal("Average: ${(average * 100).round(2)}%").formatted(averageFormatting), x, y, WHITE)
     }
 }
