@@ -79,23 +79,31 @@ object HorsePowerClient : ClientModInitializer {
                                                 builder.suggest("best").suggest("worst").buildFuture()
                                             }
                                             .executes { context ->
-                                                val criteria = StringArgumentType.getString(context, "criteria")
+                                                val criteria = StringArgumentType.getString(context, "criteria").lowercase()
                                                 val amount = IntegerArgumentType.getInteger(context, "amount")
-                                                val search_direction = StringArgumentType.getString(context, "direction")
+                                                val searchDirection = StringArgumentType.getString(context, "direction")
                                                     .equals("best", ignoreCase = true)
 
-                                                executeSearch(context, criteria, amount, search_direction)
-                                                1
+                                                executeSearch(context, criteria, amount, searchDirection)
                                             }
-                                    )
-                            )
+                                    ).executes { context ->
+                                        val criteria = StringArgumentType.getString(context, "criteria").lowercase()
+                                        val amount = IntegerArgumentType.getInteger(context, "amount")
+                                        val searchDirection = true
+                                        executeSearch(context, criteria, amount, searchDirection)
+                                    }
+                            ).executes { context ->
+                                val criteria = StringArgumentType.getString(context, "criteria").lowercase()
+                                val amount = 2
+                                val dir = true
+                                executeSearch(context, criteria, amount, dir)
+                            }
                     )
                     .executes { context ->
                         val criteria = "average"
                         val amount = 2
                         val dir = true
                         executeSearch(context, criteria, amount, dir)
-                        1
                     }
             )
             dispatcher.register(
@@ -161,7 +169,8 @@ object HorsePowerClient : ClientModInitializer {
         logger.info("SearchAllowedPayload registered")
     }
 
-    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, search_direction: Boolean): Int {
+    private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, searchDirection: Boolean): Int {
+        var criteria = criteria
         if (!HorsePowerConfig.isSearchCommandAllowed) {
             context.source.sendError(Text.translatable("horsepower.search.disabled"))
             return 0
@@ -174,6 +183,7 @@ object HorsePowerClient : ClientModInitializer {
                     "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
                     "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
                     else -> {
+                        criteria = "average"
                         val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
                             AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
                             AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
@@ -196,7 +206,7 @@ object HorsePowerClient : ClientModInitializer {
         } else {
             last = System.currentTimeMillis()
             HorsePowerClient.horses.clear()
-            if (search_direction) {
+            if (searchDirection) {
                 HorsePowerClient.horses += horses.takeLast(amount)
             }else{
                 HorsePowerClient.horses += horses.take(amount)
@@ -205,8 +215,8 @@ object HorsePowerClient : ClientModInitializer {
                 Text.translatable(
                     "horsepower.search.success",
                     HorsePowerClient.horses.size,
-                    criteria,
-                    if (search_direction) "best" else "worst"
+                    Text.translatable("horsepower.search.criteria.$criteria"),
+                    Text.translatable(if (searchDirection) "horsepower.search.best" else "horsepower.search.worst")
                 ).withColor(Formatting.GREEN.colorValue!!)
             )
             1
