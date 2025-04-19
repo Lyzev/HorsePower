@@ -4,8 +4,20 @@
   "version": "${version}",
   "name": "HorsePower",
   "description": "Ever wonder if your horse is more of a galloping champion or a pasture potato?",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    {
+      "name" : "Lyzev",
+      "contact" : {
+        "email" : "contact@lyzev.dev",
+        "homepage" : "https://lyzev.dev"
+      }
+    }
+  ],
+  "contact": {
+    "homepage" : "https://github.com/Lyzev/HorsePower",
+    "sources" : "https://github.com/Lyzev/HorsePower",
+    "issues" : "https://github.com/Lyzev/HorsePower/issues"
+  },
   "license": "AGPL-3.0",
   "icon": "assets/horsepower/icon.png",
   "environment": "*",

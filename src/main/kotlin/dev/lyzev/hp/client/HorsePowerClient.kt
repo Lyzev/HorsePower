@@ -22,7 +22,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import dev.lyzev.hp.client.modmenu.HorsePowerConfig
 import dev.lyzev.hp.client.modmenu.HorsePowerConfigManager
-import dev.lyzev.hp.client.util.HorseStatsRenderer.render
+import dev.lyzev.hp.client.util.HorseStatsRenderer
 import dev.lyzev.hp.client.util.round
 import dev.lyzev.hp.client.util.toBPS
 import dev.lyzev.hp.client.util.toJump
@@ -33,7 +33,8 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.minecraft.client.MinecraftClient
 import net.minecraft.entity.Entity
@@ -44,6 +45,7 @@ import net.minecraft.entity.passive.HorseEntity
 import net.minecraft.entity.passive.MuleEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
+import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 
 
@@ -132,20 +134,8 @@ object HorsePowerClient : ClientModInitializer {
         })
         logger.info("Commands registered")
 
-        HudRenderCallback.EVENT.register(HudRenderCallback { drawContext, _ ->
-            if (HorsePowerConfig.SHOW_HUD.value) {
-                val entity = mc.targetedEntity
-                if (entity is AbstractHorseEntity) {
-                    render(
-                        drawContext,
-                        entity,
-                        mc.window.scaledWidth / 2 + 10,
-                        mc.window.scaledHeight / 2 + 10,
-                        0,
-                        0
-                    )
-                }
-            }
+        HudLayerRegistrationCallback.EVENT.register(HudLayerRegistrationCallback { layeredDrawerWrapper ->
+            layeredDrawerWrapper.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, Identifier.of("horsepower", "hud"), HorseStatsRenderer)
         })
         logger.info("HudRenderCallback registered")
 

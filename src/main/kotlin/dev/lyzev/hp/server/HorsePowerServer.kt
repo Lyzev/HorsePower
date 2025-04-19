@@ -24,7 +24,6 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking
 import org.apache.logging.log4j.LogManager
-import kotlin.math.log
 
 object HorsePowerServer : DedicatedServerModInitializer {
 

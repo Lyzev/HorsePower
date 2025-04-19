@@ -18,24 +18,39 @@
 package dev.lyzev.hp.client.util
 
 import dev.lyzev.hp.client.HorsePowerClient
+import dev.lyzev.hp.client.HorsePowerClient.mc
 import dev.lyzev.hp.client.modmenu.HorsePowerConfig
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.LayeredDrawer
 import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.entity.attribute.EntityAttributes
 import net.minecraft.entity.passive.AbstractHorseEntity
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
 
-object HorseStatsRenderer {
+object HorseStatsRenderer : LayeredDrawer.Layer {
 
     private val BACKGROUND_TEXTURE = Identifier.of(HorsePowerClient.MOD_ID, "textures/gui/container/background.png")
     private const val WHITE = 0xFFFFFFFF.toInt()
     private val FORMATTINGS = arrayOf(Formatting.DARK_RED, Formatting.RED, Formatting.GOLD, Formatting.YELLOW, Formatting.GREEN, Formatting.DARK_GREEN)
 
-    fun render(drawContext: DrawContext, entity: AbstractHorseEntity, x: Int, y: Int, mouseX: Int, mouseY: Int) {
-        if (!HorsePowerConfig.SHOW_INVENTORY.value) return
+    override fun render(
+        drawContext: DrawContext,
+        renderTickCounter: RenderTickCounter
+    ) {
+        if (!HorsePowerConfig.SHOW_HUD.value) return
+        val entity = mc.targetedEntity
+        if (entity is AbstractHorseEntity) {
+            val x = mc.window.scaledWidth / 2 + 10
+            val y = mc.window.scaledHeight / 2 + 10
 
+            render(drawContext, entity, x, y, -1, -1)
+        }
+    }
+
+    fun render(drawContext: DrawContext, entity: AbstractHorseEntity, x: Int, y: Int, mouseX: Int, mouseY: Int) {
         val speed = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toBPS().round(3)
         val jump = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toJump().round(3)
         val health = entity.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).round(3)
@@ -64,7 +79,7 @@ object HorseStatsRenderer {
     private fun DrawContext.drawAttribute(symbol: String, value: Double, percentage: Double, minValue: Double, maxValue: Double, x: Int, y: Int, offsetY: Int, mouseX: Int, mouseY: Int) {
         val text = buildAttributeText(symbol, value, percentage)
         val formatting = getFormatting(percentage)
-        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal(text).formatted(formatting), x, y + offsetY, WHITE)
+        drawTextWithShadow(mc.textRenderer, Text.literal(text).formatted(formatting), x, y + offsetY, WHITE)
 
         if (isMouseHovering(mouseX, mouseY, x, y + offsetY, text)) {
             drawTooltip(minValue, maxValue, mouseX, mouseY)
@@ -94,7 +109,7 @@ object HorseStatsRenderer {
     }
 
     private fun isMouseHovering(mouseX: Int, mouseY: Int, x: Int, y: Int, text: String): Boolean {
-        val textWidth = HorsePowerClient.mc.textRenderer.getWidth(text)
+        val textWidth = mc.textRenderer.getWidth(text)
         return mouseX in x..(x + textWidth) && mouseY in y..(y + 9)
     }
 
@@ -103,12 +118,12 @@ object HorseStatsRenderer {
             Text.literal("Min: ${minValue.round(2)}").formatted(Formatting.DARK_RED),
             Text.literal("Max: ${maxValue.round(2)}").formatted(Formatting.DARK_GREEN)
         )
-        drawTooltip(HorsePowerClient.mc.textRenderer, hoverText, mouseX, mouseY)
+        drawTooltip(mc.textRenderer, hoverText, mouseX, mouseY)
     }
 
     private fun DrawContext.drawAverage(speedPercentage: Double, jumpPercentage: Double, healthPercentage: Double, x: Int, y: Int) {
         val average = (speedPercentage + jumpPercentage + healthPercentage) / 3
         val averageFormatting = getFormatting(average)
-        drawTextWithShadow(HorsePowerClient.mc.textRenderer, Text.literal("Average: ${(average * 100).round(2)}%").formatted(averageFormatting), x, y, WHITE)
+        drawTextWithShadow(mc.textRenderer, Text.literal("Average: ${(average * 100).round(2)}%").formatted(averageFormatting), x, y, WHITE)
     }
 }
