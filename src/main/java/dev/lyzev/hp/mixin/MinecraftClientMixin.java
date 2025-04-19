@@ -18,7 +18,6 @@
 package dev.lyzev.hp.mixin;
 
 import dev.lyzev.hp.client.HorsePowerClient;
-import kotlin.Metadata;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
