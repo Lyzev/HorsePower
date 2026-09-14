@@ -70,3 +70,7 @@ tasks.jar {
         rename { "${it}_${project.property("archives_base_name") as String}" }
     }
 }
+
+tasks.test {
+    failOnNoDiscoveredTests = false
+}
