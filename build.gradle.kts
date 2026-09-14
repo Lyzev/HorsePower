@@ -13,7 +13,7 @@ base {
     archivesName.set(project.property("archives_base_name") as String)
 }
 
-val targetJavaVersion = 21
+val targetJavaVersion = 25
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     withSourcesJar()
@@ -28,17 +28,16 @@ repositories {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(libs.yarn)
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.language.kotlin)
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.language.kotlin)
 
-    modImplementation(libs.fabric.api)
+    implementation(libs.fabric.api)
 
-    modImplementation(libs.modmenu)
+    implementation(libs.modmenu)
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/horsepower.accesswidener")
+    accessWidenerPath = file("src/main/resources/horsepower.classtweaker")
 }
 
 tasks.processResources {

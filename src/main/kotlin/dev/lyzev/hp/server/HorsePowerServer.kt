@@ -32,13 +32,13 @@ object HorsePowerServer : DedicatedServerModInitializer {
     override fun onInitializeServer() {
         logger.info("Initializing HorsePower server")
 
-        PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
+        PayloadTypeRegistry.clientboundConfiguration().register(SearchAllowedPayload.TYPE, SearchAllowedPayload.CODEC)
         logger.info("Registered SearchAllowedPayload")
 
         val payload = SearchAllowedPayload(false)
 
-        ServerConfigurationConnectionEvents.CONFIGURE.register { handler, sender ->
-            if (ServerConfigurationNetworking.canSend(handler, SearchAllowedPayload.ID)) {
+        ServerConfigurationConnectionEvents.CONFIGURE.register { handler, _ ->
+            if (ServerConfigurationNetworking.canSend(handler, SearchAllowedPayload.TYPE)) {
                 ServerConfigurationNetworking.send(handler, payload)
                 logger.info("Disabled search command for player.")
             } else {

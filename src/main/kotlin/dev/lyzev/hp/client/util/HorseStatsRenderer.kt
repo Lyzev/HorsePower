@@ -20,66 +20,63 @@ package dev.lyzev.hp.client.util
 import dev.lyzev.hp.client.HorsePowerClient
 import dev.lyzev.hp.client.HorsePowerClient.mc
 import dev.lyzev.hp.client.modmenu.HorsePowerConfig
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.LayeredDrawer
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.passive.AbstractHorseEntity
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
-import net.minecraft.util.Identifier
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement
+import net.minecraft.ChatFormatting
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.animal.equine.AbstractHorse
 
-object HorseStatsRenderer : LayeredDrawer.Layer {
+object HorseStatsRenderer : HudElement {
 
-    private val BACKGROUND_TEXTURE = Identifier.of(HorsePowerClient.MOD_ID, "textures/gui/container/background.png")
+    private val BACKGROUND_TEXTURE = Identifier.fromNamespaceAndPath(HorsePowerClient.MOD_ID, "textures/gui/container/background.png")
     private const val WHITE = 0xFFFFFFFF.toInt()
-    private val FORMATTINGS = arrayOf(Formatting.DARK_RED, Formatting.RED, Formatting.GOLD, Formatting.YELLOW, Formatting.GREEN, Formatting.DARK_GREEN)
+    private val FORMATTINGS = arrayOf(ChatFormatting.DARK_RED, ChatFormatting.RED, ChatFormatting.GOLD, ChatFormatting.YELLOW, ChatFormatting.GREEN, ChatFormatting.DARK_GREEN)
 
-    override fun render(
-        drawContext: DrawContext,
-        renderTickCounter: RenderTickCounter
-    ) {
+    override fun extractRenderState(extractor: GuiGraphicsExtractor, deltaTracker: DeltaTracker) {
         if (!HorsePowerConfig.SHOW_HUD.value) return
-        val entity = mc.targetedEntity
-        if (entity is AbstractHorseEntity) {
-            val x = mc.window.scaledWidth / 2 + 10
-            val y = mc.window.scaledHeight / 2 + 10
+        val entity = mc.crosshairPickEntity
+        if (entity is AbstractHorse) {
+            val x = extractor.guiWidth() / 2 + 10
+            val y = extractor.guiHeight() / 2 + 10
 
-            render(drawContext, entity, x, y, -1, -1)
+            render(extractor, entity, x, y, -1, -1)
         }
     }
 
-    fun render(drawContext: DrawContext, entity: AbstractHorseEntity, x: Int, y: Int, mouseX: Int, mouseY: Int) {
-        val speed = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toBPS().round(3)
-        val jump = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toJump().round(3)
-        val health = entity.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).round(3)
+    fun render(extractor: GuiGraphicsExtractor, entity: AbstractHorse, x: Int, y: Int, mouseX: Int, mouseY: Int) {
+        val speed = entity.getAttributeBaseValue(Attributes.MOVEMENT_SPEED).toBPS().round(3)
+        val jump = entity.getAttributeBaseValue(Attributes.JUMP_STRENGTH).toJump().round(3)
+        val health = entity.getAttributeBaseValue(Attributes.MAX_HEALTH).round(3)
 
-        val speedPercentage = entity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).toPercentage(AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS)
-        val jumpPercentage = entity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).toPercentage(AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS)
-        val healthPercentage = health.toPercentage(AbstractHorseEntity.MAX_HEALTH_BONUS)
+        val speedPercentage = entity.getAttributeBaseValue(Attributes.MOVEMENT_SPEED).toPercentage(HorsePowerClient.maxMovementSpeed)
+        val jumpPercentage = entity.getAttributeBaseValue(Attributes.JUMP_STRENGTH).toPercentage(HorsePowerClient.maxJumpStrength)
+        val healthPercentage = health.toPercentage(HorsePowerClient.maxHealth)
 
-        drawContext.drawBackgroundBox(x, y)
+        extractor.drawBackgroundBox(x, y)
 
-        drawContext.drawAttribute("↔ ", speed, speedPercentage, AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble().toBPS(), AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble().toBPS(), x, y, 0, mouseX, mouseY)
-        drawContext.drawAttribute("↕ ", jump, jumpPercentage, AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble().toJump(), AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble().toJump(), x, y, 10, mouseX, mouseY)
-        drawContext.drawAttribute("♥ ", health, healthPercentage, AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(), AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble(), x, y, 20, mouseX, mouseY)
+        extractor.drawAttribute("→ ", speed, speedPercentage, HorsePowerClient.minMovementSpeed.toBPS(), HorsePowerClient.maxMovementSpeed.toBPS(), x, y, 0, mouseX, mouseY)
+        extractor.drawAttribute("↑ ", jump, jumpPercentage, HorsePowerClient.minJumpStrength.toJump(), HorsePowerClient.maxJumpStrength.toJump(), x, y, 10, mouseX, mouseY)
+        extractor.drawAttribute("♥ ", health, healthPercentage, HorsePowerClient.minHealth, HorsePowerClient.maxHealth, x, y, 20, mouseX, mouseY)
 
         if (HorsePowerConfig.SHOW_AVERAGE.value) {
-            drawContext.drawAverage(speedPercentage, jumpPercentage, healthPercentage, x, y + 30)
+            extractor.drawAverage(speedPercentage, jumpPercentage, healthPercentage, x, y + 30)
         }
     }
 
-    private fun DrawContext.drawBackgroundBox(x: Int, y: Int) {
-        drawTexture(RenderLayer::getGuiTextured, BACKGROUND_TEXTURE, x - 5, y - 5, 0f, 0f, 126, 61, 256, 256)
+    private fun GuiGraphicsExtractor.drawBackgroundBox(x: Int, y: Int) {
+        blit(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURE, x - 5, y - 5, 0f, 0f, 126, 61, 256, 256)
     }
 
-    private fun Double.toPercentage(maxValue: Float): Double = this / maxValue
+    private fun Double.toPercentage(maxValue: Double): Double = this / maxValue
 
-    private fun DrawContext.drawAttribute(symbol: String, value: Double, percentage: Double, minValue: Double, maxValue: Double, x: Int, y: Int, offsetY: Int, mouseX: Int, mouseY: Int) {
+    private fun GuiGraphicsExtractor.drawAttribute(symbol: String, value: Double, percentage: Double, minValue: Double, maxValue: Double, x: Int, y: Int, offsetY: Int, mouseX: Int, mouseY: Int) {
         val text = buildAttributeText(symbol, value, percentage)
         val formatting = getFormatting(percentage)
-        drawTextWithShadow(mc.textRenderer, Text.literal(text).formatted(formatting), x, y + offsetY, WHITE)
+        text(mc.font, Component.literal(text).withStyle(formatting), x, y + offsetY, WHITE, true)
 
         if (isMouseHovering(mouseX, mouseY, x, y + offsetY, text)) {
             drawTooltip(minValue, maxValue, mouseX, mouseY)
@@ -99,31 +96,31 @@ object HorseStatsRenderer : LayeredDrawer.Layer {
     }
 
     private fun String.getUnit(): String = when (this) {
-        "↔ " -> " m/s"
-        "↕ " -> " blocks"
-        else -> " HP"
+        "→ " -> Component.translatable("horsepower.unit.speed").string
+        "↑ " -> Component.translatable("horsepower.unit.jump").string
+        else -> Component.translatable("horsepower.unit.health").string
     }
 
-    private fun getFormatting(percentage: Double): Formatting {
+    private fun getFormatting(percentage: Double): ChatFormatting {
         return FORMATTINGS[(percentage * (FORMATTINGS.size - 1)).toInt().coerceIn(0, FORMATTINGS.size - 1)]
     }
 
     private fun isMouseHovering(mouseX: Int, mouseY: Int, x: Int, y: Int, text: String): Boolean {
-        val textWidth = mc.textRenderer.getWidth(text)
+        val textWidth = mc.font.width(text)
         return mouseX in x..(x + textWidth) && mouseY in y..(y + 9)
     }
 
-    private fun DrawContext.drawTooltip(minValue: Double, maxValue: Double, mouseX: Int, mouseY: Int) {
+    private fun GuiGraphicsExtractor.drawTooltip(minValue: Double, maxValue: Double, mouseX: Int, mouseY: Int) {
         val hoverText = listOf(
-            Text.literal("Min: ${minValue.round(2)}").formatted(Formatting.DARK_RED),
-            Text.literal("Max: ${maxValue.round(2)}").formatted(Formatting.DARK_GREEN)
+            Component.translatable("horsepower.hud.tooltip.min", minValue.round(2)).withStyle(ChatFormatting.DARK_RED),
+            Component.translatable("horsepower.hud.tooltip.max", maxValue.round(2)).withStyle(ChatFormatting.DARK_GREEN)
         )
-        drawTooltip(mc.textRenderer, hoverText, mouseX, mouseY)
+        setComponentTooltipForNextFrame(mc.font, hoverText, mouseX, mouseY)
     }
 
-    private fun DrawContext.drawAverage(speedPercentage: Double, jumpPercentage: Double, healthPercentage: Double, x: Int, y: Int) {
+    private fun GuiGraphicsExtractor.drawAverage(speedPercentage: Double, jumpPercentage: Double, healthPercentage: Double, x: Int, y: Int) {
         val average = (speedPercentage + jumpPercentage + healthPercentage) / 3
         val averageFormatting = getFormatting(average)
-        drawTextWithShadow(mc.textRenderer, Text.literal("Average: ${(average * 100).round(2)}%").formatted(averageFormatting), x, y, WHITE)
+        text(mc.font, Component.translatable("horsepower.hud.average", (average * 100).round(2)).withStyle(averageFormatting), x, y, WHITE, true)
     }
 }

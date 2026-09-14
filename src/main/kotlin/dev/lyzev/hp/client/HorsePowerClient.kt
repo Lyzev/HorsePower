@@ -28,32 +28,38 @@ import dev.lyzev.hp.client.util.toBPS
 import dev.lyzev.hp.client.util.toJump
 import dev.lyzev.hp.main.payload.SearchAllowedPayload
 import net.fabricmc.api.ClientModInitializer
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
-import net.minecraft.client.MinecraftClient
-import net.minecraft.entity.Entity
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.passive.AbstractHorseEntity
-import net.minecraft.entity.passive.DonkeyEntity
-import net.minecraft.entity.passive.HorseEntity
-import net.minecraft.entity.passive.MuleEntity
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
-import net.minecraft.util.Identifier
+import net.minecraft.ChatFormatting
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.animal.equine.AbstractHorse
+import net.minecraft.world.entity.animal.equine.Donkey
+import net.minecraft.world.entity.animal.equine.Horse
+import net.minecraft.world.entity.animal.equine.Mule
 import org.apache.logging.log4j.LogManager
 
 
 object HorsePowerClient : ClientModInitializer {
 
     const val MOD_ID = "horsepower"
+    val minMovementSpeed = AbstractHorse.MIN_MOVEMENT_SPEED.toDouble()
+    val maxMovementSpeed = AbstractHorse.MAX_MOVEMENT_SPEED.toDouble()
+    val minJumpStrength = AbstractHorse.MIN_JUMP_STRENGTH.toDouble()
+    val maxJumpStrength = AbstractHorse.MAX_JUMP_STRENGTH.toDouble()
+    val minHealth = AbstractHorse.MIN_HEALTH.toDouble()
+    val maxHealth = AbstractHorse.MAX_HEALTH.toDouble()
 
-    val mc = MinecraftClient.getInstance()
+    val mc = Minecraft.getInstance()
     private val logger = LogManager.getLogger(HorsePowerClient::class.java)
 
     var last = System.currentTimeMillis()
@@ -67,16 +73,16 @@ object HorsePowerClient : ClientModInitializer {
 
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
             dispatcher.register(
-                ClientCommandManager.literal("search")
+                ClientCommands.literal("search")
                     .then(
-                        ClientCommandManager.argument("criteria", StringArgumentType.word())
+                        ClientCommands.argument("criteria", StringArgumentType.word())
                             .suggests { _, builder ->
                                 builder.suggest("health").suggest("speed").suggest("jump").suggest("average").buildFuture()
                             }
                             .then(
-                                ClientCommandManager.argument("amount", IntegerArgumentType.integer(1, 100))
+                                ClientCommands.argument("amount", IntegerArgumentType.integer(1, 100))
                                     .then(
-                                        ClientCommandManager.argument("direction", StringArgumentType.word())
+                                        ClientCommands.argument("direction", StringArgumentType.word())
                                             .suggests { _, builder ->
                                                 builder.suggest("best").suggest("worst").buildFuture()
                                             }
@@ -109,24 +115,24 @@ object HorsePowerClient : ClientModInitializer {
                     }
             )
             dispatcher.register(
-                ClientCommandManager.literal("stats").executes { context: CommandContext<FabricClientCommandSource> ->
-                    val targetEntity = mc.targetedEntity
-                    if (targetEntity is AbstractHorseEntity) {
-                        val movementSpeed = targetEntity.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                        val jumpStrength = targetEntity.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
-                        val health = targetEntity.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
+                ClientCommands.literal("stats").executes { context: CommandContext<FabricClientCommandSource> ->
+                    val targetEntity = mc.crosshairPickEntity
+                    if (targetEntity is AbstractHorse) {
+                        val movementSpeed = targetEntity.getAttributeBaseValue(Attributes.MOVEMENT_SPEED)
+                        val jumpStrength = targetEntity.getAttributeBaseValue(Attributes.JUMP_STRENGTH)
+                        val health = targetEntity.getAttributeBaseValue(Attributes.MAX_HEALTH)
                         context.source.sendFeedback(
-                            Text.translatable(
+                            Component.translatable(
                                 "horsepower.stats.success",
                                 movementSpeed.toBPS().round(1),
                                 jumpStrength.toJump().round(1),
                                 health.round(1)
-                            ).formatted(Formatting.GREEN)
+                            ).withStyle(ChatFormatting.GREEN)
                         )
                         1
                     } else {
                         context.source.sendError(
-                            Text.translatable("horsepower.stats.error").formatted(Formatting.RED)
+                            Component.translatable("horsepower.stats.error").withStyle(ChatFormatting.RED)
                         )
                         0
                     }
@@ -134,24 +140,26 @@ object HorsePowerClient : ClientModInitializer {
         })
         logger.info("Commands registered")
 
-        HudLayerRegistrationCallback.EVENT.register(HudLayerRegistrationCallback { layeredDrawerWrapper ->
-            layeredDrawerWrapper.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, Identifier.of("horsepower", "hud"), HorseStatsRenderer)
-        })
-        logger.info("HudRenderCallback registered")
+        HudElementRegistry.attachElementAfter(
+            VanillaHudElements.MISC_OVERLAYS,
+            Identifier.fromNamespaceAndPath(MOD_ID, "hud"),
+            HorseStatsRenderer
+        )
+        logger.info("HudElement registered")
 
-        ClientLoginConnectionEvents.INIT.register(ClientLoginConnectionEvents.Init { handler, client ->
+        ClientLoginConnectionEvents.INIT.register(ClientLoginConnectionEvents.Init { _, _ ->
             HorsePowerConfig.isSearchCommandAllowed = true
         })
         logger.info("ClientLoginConnectionEvents registered")
 
-        PayloadTypeRegistry.configurationS2C().register(SearchAllowedPayload.ID, SearchAllowedPayload.CODEC)
+        PayloadTypeRegistry.clientboundConfiguration().register(SearchAllowedPayload.TYPE, SearchAllowedPayload.CODEC)
 
-        ClientConfigurationNetworking.registerGlobalReceiver(SearchAllowedPayload.ID) { payload: SearchAllowedPayload, context ->
+        ClientConfigurationNetworking.registerGlobalReceiver(SearchAllowedPayload.TYPE) { payload: SearchAllowedPayload, context ->
             context.client().execute {
                 HorsePowerConfig.isSearchCommandAllowed = payload.allowed
                 if (!payload.allowed) {
-                    mc.inGameHud.chatHud.addMessage(
-                        Text.translatable("horsepower.search.disabled").formatted(Formatting.RED)
+                    mc.gui.hud.chat.addClientSystemMessage(
+                        Component.translatable("horsepower.search.disabled").withStyle(ChatFormatting.RED)
                     )
                 }
             }
@@ -162,52 +170,52 @@ object HorsePowerClient : ClientModInitializer {
     private fun executeSearch(context: CommandContext<FabricClientCommandSource>, criteria: String, amount: Int, searchDirection: Boolean): Int {
         var criteria = criteria
         if (!HorsePowerConfig.isSearchCommandAllowed) {
-            context.source.sendError(Text.translatable("horsepower.search.disabled"))
+            context.source.sendError(Component.translatable("horsepower.search.disabled"))
             return 0
         }
         val horses =
-            mc.world!!.entities.filter { it is HorseEntity || it is DonkeyEntity || it is MuleEntity }.sortedBy {
-                val horse = it as AbstractHorseEntity
+            mc.level!!.entitiesForRendering().filter { it is Horse || it is Donkey || it is Mule }.sortedBy {
+                val horse = it as AbstractHorse
                 when (criteria) {
-                    "health" -> horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH)
-                    "speed" -> horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED)
-                    "jump" -> horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH)
+                    "health" -> horse.getAttributeBaseValue(Attributes.MAX_HEALTH)
+                    "speed" -> horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED)
+                    "jump" -> horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH)
                     else -> {
                         criteria = "average"
-                        val movementSpeed = horse.getAttributeBaseValue(EntityAttributes.MOVEMENT_SPEED).coerceIn(
-                            AbstractHorseEntity.MIN_MOVEMENT_SPEED_BONUS.toDouble(),
-                            AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                        ) / AbstractHorseEntity.MAX_MOVEMENT_SPEED_BONUS.toDouble()
-                        val jumpStrength = horse.getAttributeBaseValue(EntityAttributes.JUMP_STRENGTH).coerceIn(
-                            AbstractHorseEntity.MIN_JUMP_STRENGTH_BONUS.toDouble(),
-                            AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                        ) / AbstractHorseEntity.MAX_JUMP_STRENGTH_BONUS.toDouble()
-                        val health = horse.getAttributeBaseValue(EntityAttributes.MAX_HEALTH).coerceIn(
-                            AbstractHorseEntity.MIN_HEALTH_BONUS.toDouble(),
-                            AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
-                        ) / AbstractHorseEntity.MAX_HEALTH_BONUS.toDouble()
+                        val movementSpeed = horse.getAttributeBaseValue(Attributes.MOVEMENT_SPEED).coerceIn(
+                            minMovementSpeed,
+                            maxMovementSpeed
+                        ) / maxMovementSpeed
+                        val jumpStrength = horse.getAttributeBaseValue(Attributes.JUMP_STRENGTH).coerceIn(
+                            minJumpStrength,
+                            maxJumpStrength
+                        ) / maxJumpStrength
+                        val health = horse.getAttributeBaseValue(Attributes.MAX_HEALTH).coerceIn(
+                            minHealth,
+                            maxHealth
+                        ) / maxHealth
                         movementSpeed + jumpStrength + health
                     }
                 }
             }
         return if (horses.isEmpty()) {
-            context.source.sendError(Text.translatable("horsepower.search.error"))
+            context.source.sendError(Component.translatable("horsepower.search.error"))
             0
         } else {
             last = System.currentTimeMillis()
             HorsePowerClient.horses.clear()
             if (searchDirection) {
                 HorsePowerClient.horses += horses.takeLast(amount)
-            }else{
+            } else {
                 HorsePowerClient.horses += horses.take(amount)
             }
             context.source.sendFeedback(
-                Text.translatable(
+                Component.translatable(
                     "horsepower.search.success",
                     HorsePowerClient.horses.size,
-                    Text.translatable("horsepower.search.criteria.$criteria"),
-                    Text.translatable(if (searchDirection) "horsepower.search.best" else "horsepower.search.worst")
-                ).withColor(Formatting.GREEN.colorValue!!)
+                    Component.translatable("horsepower.search.criteria.$criteria"),
+                    Component.translatable(if (searchDirection) "horsepower.search.best" else "horsepower.search.worst")
+                ).withStyle(ChatFormatting.GREEN)
             )
             1
         }

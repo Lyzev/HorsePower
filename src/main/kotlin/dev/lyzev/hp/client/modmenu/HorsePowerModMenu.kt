@@ -19,10 +19,10 @@ package dev.lyzev.hp.client.modmenu
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory
 import com.terraformersmc.modmenu.api.ModMenuApi
-import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.gui.screens.Screen
 
 class HorsePowerModMenu : ModMenuApi {
-    override fun getModConfigScreenFactory(): ConfigScreenFactory<Screen> {
-        return ConfigScreenFactory { parent -> HorsePowerConfigScreen(parent) }
+    override fun getModConfigScreenFactory(): ConfigScreenFactory<*> {
+        return ConfigScreenFactory { parent: Screen -> HorsePowerConfigScreen(parent) }
     }
 }

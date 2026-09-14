@@ -25,5 +25,11 @@
   "option.modmenu.show_percentage.false": "AUS",
   "option.modmenu.show_average": "Durchschnitt anzeigen",
   "option.modmenu.show_average.true": "AN",
-  "option.modmenu.show_average.false": "AUS"
+  "option.modmenu.show_average.false": "AUS",
+  "horsepower.unit.speed": " m/s",
+  "horsepower.unit.jump": " Blöcke",
+  "horsepower.unit.health": " HP",
+  "horsepower.hud.tooltip.min": "Min: %s",
+  "horsepower.hud.tooltip.max": "Max: %s",
+  "horsepower.hud.average": "Durchschnitt: %s%%"
 }

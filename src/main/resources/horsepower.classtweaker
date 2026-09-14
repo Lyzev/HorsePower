@@ -1,0 +1,7 @@
+classTweaker v1 official
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MIN_MOVEMENT_SPEED F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_MOVEMENT_SPEED F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MIN_JUMP_STRENGTH F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_JUMP_STRENGTH F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MIN_HEALTH F
+accessible field net/minecraft/world/entity/animal/equine/AbstractHorse MAX_HEALTH F

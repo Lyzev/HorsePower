@@ -25,5 +25,11 @@
   "option.modmenu.show_percentage.false": "ВЫКЛ",
   "option.modmenu.show_average": "Показывать среднее значение",
   "option.modmenu.show_average.true": "ВКЛ",
-  "option.modmenu.show_average.false": "ВЫКЛ"
+  "option.modmenu.show_average.false": "ВЫКЛ",
+  "horsepower.unit.speed": " м/с",
+  "horsepower.unit.jump": " блоков",
+  "horsepower.unit.health": " ХП",
+  "horsepower.hud.tooltip.min": "Мин: %s",
+  "horsepower.hud.tooltip.max": "Макс: %s",
+  "horsepower.hud.average": "Среднее: %s%%"
 }

@@ -17,13 +17,12 @@
 
 package dev.lyzev.hp.mixin;
 
-import dev.lyzev.hp.client.HorsePowerClient;
 import dev.lyzev.hp.client.modmenu.HorsePowerConfig;
 import dev.lyzev.hp.client.util.HorseStatsRenderer;
-import kotlin.jvm.internal.Intrinsics;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HorseScreen;
-import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractMountInventoryScreen;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,23 +30,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(HorseScreen.class)
-public final class HorseScreenMixin {
+@Mixin(AbstractMountInventoryScreen.class)
+public final class AbstractMountInventoryScreenMixin {
     @Shadow
     @Final
-    private AbstractHorseEntity entity;
+    protected LivingEntity mount;
 
-    @Inject(method = "drawBackground", at = @At("RETURN"))
-   private void onDrawBackground(DrawContext drawContext, float f, int mouseX, int mouseY, CallbackInfo ci) {
-      if (HorsePowerConfig.INSTANCE.getSHOW_INVENTORY().getValue()) {
-         int imageWidth = 176;
-         int imageHeight = 166;
-         int x = HorsePowerClient.INSTANCE.getMc().getWindow().getScaledWidth() / 2 + imageWidth / 2;
-         int y = (HorsePowerClient.INSTANCE.getMc().getWindow().getScaledHeight() - imageHeight) / 2;
-         HorseStatsRenderer var10000 = HorseStatsRenderer.INSTANCE;
-         AbstractHorseEntity var10002 = this.entity;
-         Intrinsics.checkNotNull(var10002);
-         var10000.render(drawContext, var10002, x + 10, y + 5, mouseX, mouseY);
-      }
-   }
+    @Inject(method = "extractBackground", at = @At("RETURN"))
+    private void onExtractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        if (HorsePowerConfig.INSTANCE.getSHOW_INVENTORY().getValue() && this.mount instanceof AbstractHorse horse) {
+            int imageWidth = 176;
+            int imageHeight = 166;
+            int x = graphics.guiWidth() / 2 + imageWidth / 2;
+            int y = (graphics.guiHeight() - imageHeight) / 2;
+            HorseStatsRenderer.INSTANCE.render(graphics, horse, x + 10, y + 5, mouseX, mouseY);
+        }
+    }
 }

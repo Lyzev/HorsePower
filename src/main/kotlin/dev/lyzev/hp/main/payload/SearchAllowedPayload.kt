@@ -16,24 +16,24 @@
  */
 package dev.lyzev.hp.main.payload
 
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.network.codec.PacketCodec
-import net.minecraft.network.codec.PacketCodecs
-import net.minecraft.network.packet.CustomPayload
-import net.minecraft.util.Identifier
+import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.Identifier
 
 @JvmRecord
-data class SearchAllowedPayload(val allowed: Boolean) : CustomPayload {
+data class SearchAllowedPayload(val allowed: Boolean) : CustomPacketPayload {
 
-    override fun getId() = ID
+    override fun type() = TYPE
 
     companion object {
-        private val PACKET_ID = Identifier.of("horsepower", "search")
+        val TYPE: CustomPacketPayload.Type<SearchAllowedPayload> =
+            CustomPacketPayload.Type(Identifier.fromNamespaceAndPath("horsepower", "search"))
 
-        val ID = CustomPayload.Id<SearchAllowedPayload>(PACKET_ID)
-        val CODEC: PacketCodec<PacketByteBuf, SearchAllowedPayload> =
-            PacketCodec.tuple(
-                PacketCodecs.BOOLEAN, SearchAllowedPayload::allowed
+        val CODEC: StreamCodec<FriendlyByteBuf, SearchAllowedPayload> =
+            StreamCodec.composite(
+                ByteBufCodecs.BOOL, SearchAllowedPayload::allowed
             ) { allowed: Boolean -> SearchAllowedPayload(allowed) }
     }
 }

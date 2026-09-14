@@ -17,17 +17,15 @@
 
 package dev.lyzev.hp.client.modmenu
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.screen.option.GameOptionsScreen
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.gui.screens.options.OptionsSubScreen
+import net.minecraft.network.chat.Component
 
-class HorsePowerConfigScreen(parent: Screen) : GameOptionsScreen(parent, MinecraftClient.getInstance().options, Text.translatable("horsepower.options")) {
+class HorsePowerConfigScreen(parent: Screen) : OptionsSubScreen(parent, Minecraft.getInstance().options, Component.translatable("horsepower.options")) {
 
     override fun addOptions() {
-        if (this.body != null) {
-            body!!.addAll(*HorsePowerConfig.asOptions())
-        }
+        this.list?.addSmall(*HorsePowerConfig.asOptions())
     }
 
     override fun removed() {

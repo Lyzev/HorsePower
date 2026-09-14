@@ -25,5 +25,11 @@
   "option.modmenu.show_percentage.false": "OFF",
   "option.modmenu.show_average": "Show average",
   "option.modmenu.show_average.true": "ON",
-  "option.modmenu.show_average.false": "OFF"
+  "option.modmenu.show_average.false": "OFF",
+  "horsepower.unit.speed": " m/s",
+  "horsepower.unit.jump": " blocks",
+  "horsepower.unit.health": " HP",
+  "horsepower.hud.tooltip.min": "Min: %s",
+  "horsepower.hud.tooltip.max": "Max: %s",
+  "horsepower.hud.average": "Average: %s%%"
 }

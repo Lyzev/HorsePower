@@ -17,7 +17,7 @@
 
 package dev.lyzev.hp.client.util
 
-import net.minecraft.entity.LivingEntity
+import net.minecraft.world.entity.LivingEntity
 import kotlin.math.pow
 
 /**
@@ -47,7 +47,7 @@ fun Double.toBPS(): Double {
  * The gravity formula is based on the calculations found at:
  * https://www.reddit.com/r/GameTheorists/comments/dj8odm/i_calculated_minecrafts_true_gravity/
  *
- * @see net.minecraft.entity.passive.AbstractHorseEntity.jump
+ * @see net.minecraft.world.entity.animal.equine.AbstractHorse.executeRidersJump
  *
  * @param unit The internal unit to convert to jump height.
  */
@@ -56,7 +56,7 @@ fun Double.toJump(): Double {
     var jumpHeight = 0.0
     while (velocity > 0) {
         jumpHeight += velocity
-        velocity = (velocity - LivingEntity.GRAVITY) * FACTOR
+        velocity = (velocity - LivingEntity.DEFAULT_BASE_GRAVITY) * FACTOR
     }
     return jumpHeight
 }

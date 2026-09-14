@@ -20,7 +20,7 @@ package dev.lyzev.hp.client.modmenu
 import com.terraformersmc.modmenu.config.FileOnlyConfig
 import com.terraformersmc.modmenu.config.option.BooleanConfigOption
 import com.terraformersmc.modmenu.config.option.OptionConvertible
-import net.minecraft.client.option.SimpleOption
+import net.minecraft.client.OptionInstance
 import java.lang.reflect.Modifier
 
 object HorsePowerConfig {
@@ -33,8 +33,8 @@ object HorsePowerConfig {
 
     var isSearchCommandAllowed = true
 
-    fun asOptions(): Array<SimpleOption<*>> {
-        val options = ArrayList<SimpleOption<*>>()
+    fun asOptions(): Array<OptionInstance<*>> {
+        val options = ArrayList<OptionInstance<*>>()
         for (field in HorsePowerConfig::class.java.declaredFields) {
             if (Modifier.isFinal(field.modifiers) && OptionConvertible::class.java.isAssignableFrom(field.type) && !field.isAnnotationPresent(FileOnlyConfig::class.java)) {
                 try {
